@@ -29,6 +29,7 @@ export function ColumnFilterMenu(props: ColumnFilterMenuProps) {
     <div className="xontable-filter-menu">
       <input
         className="xontable-filter-search"
+        name="xontable-filter-search"
         value={search}
         onChange={(e) => onSearchChange(e.target.value)}
         onKeyDown={(e) => e.stopPropagation()}

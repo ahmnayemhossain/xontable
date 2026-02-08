@@ -49,7 +49,7 @@ export function XOnTableGrid<Row extends Record<string, any>>(props: GridProps<R
     <div className="xontable">
       <XOnTableHeader {...props} />
       {data.map((row, r) => (
-        <div className="xontable-row" data-row={r} key={String(row[rowIdKey] ?? r)}>
+        <div className={["xontable-row", r % 2 === 1 ? "is-zebra" : ""].join(" ")} data-row={r} key={String(row[rowIdKey] ?? r)}>
           <div className={["xontable-cell", "xontable-rownum-cell", r === active.r ? "is-active-rownum" : ""].join(" ")} style={{ width: props.rowNumberWidth }}>
             {r + 1}
           </div>
@@ -70,6 +70,7 @@ export function XOnTableGrid<Row extends Record<string, any>>(props: GridProps<R
             const isCheckbox = col.type === "checkbox";
             const isSelect = col.type === "select";
             const checked = row[col.key] === true || row[col.key] === "true";
+            const isPlaceholder = idx == null;
             return (
               <div
                 key={col.key + String(idx ?? c)}
@@ -104,13 +105,14 @@ export function XOnTableGrid<Row extends Record<string, any>>(props: GridProps<R
                   <input
                     type="checkbox"
                     className="xontable-checkbox"
+                    name="xontable-checkbox"
                     checked={checked}
                     onChange={() => onCheckboxToggle(r, c)}
                     onClick={(ev) => ev.stopPropagation()}
                     onMouseDown={(ev) => ev.stopPropagation()}
                   />
                 ) : (
-                  getValue(r, c)
+                  isPlaceholder ? "" : getValue(r, c)
                 )}
                 {isSelect && !readOnly && !isEditing && (
                   <button

@@ -107,10 +107,12 @@ export function useColumnGroups<Row extends Record<string, any>>(
     [],
   );
 
-  const resetWidths = useCallback(
-    () => setColWidths(columns.map((c) => c.width ?? 140)),
-    [columns],
-  );
+  const resetWidths = useCallback(() => {
+    setColWidths((prev) => {
+      if (!prev.length) return columns.map((c) => c.width ?? 140);
+      return columns.map((c, i) => prev[i] ?? c.width ?? 140);
+    });
+  }, [columns]);
 
   const getOrigIndex = useCallback(
     (visibleIndex: number) => visibleColumns[visibleIndex]?.idx ?? null,

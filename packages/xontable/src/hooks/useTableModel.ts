@@ -9,12 +9,14 @@ type TableModelOptions<Row extends Record<string, any>> = {
   rows: Row[];
   rowFilter?: (row: Row, r: number) => boolean;
   onChange?: (rows: Row[], meta: XOnTableMeta) => void;
+  createRow?: () => Row;
 };
 
 const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 
 export function useTableModel<Row extends Record<string, any>>(options: TableModelOptions<Row>) {
   const { columns, rows, rowFilter, onChange } = options;
+  const createRow = options.createRow;
   const colCount = columns.length;
   const [data, setData] = useState<Row[]>(rows);
   const dataRef = useRef(rows);
@@ -53,8 +55,12 @@ export function useTableModel<Row extends Record<string, any>>(options: TableMod
   const updateCells = useCallback((updates: CellUpdate[], meta: XOnTableMeta) => {
     if (updates.length === 0) return;
     const prev = dataRef.current; const next = prev.map((r) => ({ ...r })); let changed = false;
+    const map = [...view.map];
     for (const u of updates) {
-      const col = columns[u.c]; const real = view.map[u.r]; const row = real == null ? undefined : next[real];
+      const col = columns[u.c];
+      let real = map[u.r];
+      if (real == null && createRow) { real = next.length; next.push(createRow()); map[u.r] = real; }
+      const row = real == null ? undefined : next[real];
       if (!col || !row || col.editable === false) continue;
       row[col.key] = u.value as any;
       const err = validateCell(u.r, u.c, u.value, row); if (real != null) setCellError(real, u.c, err);
@@ -62,7 +68,7 @@ export function useTableModel<Row extends Record<string, any>>(options: TableMod
       lastCellRef.current = { r: u.r, c: u.c };
     }
     if (changed) commitRows(next, meta, true, prev);
-  }, [columns, commitRows, setCellError, validateCell, view.map]);
+  }, [columns, commitRows, createRow, setCellError, validateCell, view.map]);
 
   const moveActive = useCallback((dr: number, dc: number) => {
     setActive((prev) => {

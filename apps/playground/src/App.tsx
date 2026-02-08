@@ -64,10 +64,22 @@ export default function App() {
     { id: "2", name: "Eggs", active: false, group: "food", subgroup: "snacks", city: "london" },
     { id: "3", name: "Phone", active: true, group: "tech", subgroup: "mobile", city: "tokyo" },
   ]);
+  const [readOnly, setReadOnly] = React.useState(false);
+  const [theme, setTheme] = React.useState<"light" | "dark">("light");
 
   return (
     <div style={{ padding: 20 }}>
-      <XOnTable columns={columns} rows={rows} onChange={(next) => setRows(next)} />
+      <div style={{ display: "flex", gap: 16, marginBottom: 12 }}>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          <input name="themeToggle" type="checkbox" checked={theme === "dark"} onChange={() => setTheme((t) => (t === "dark" ? "light" : "dark"))} />
+          Dark mode
+        </label>
+        <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
+          <input name="readonlyToggle" type="checkbox" checked={readOnly} onChange={() => setReadOnly((v) => !v)} />
+          Readonly mode
+        </label>
+      </div>
+      <XOnTable columns={columns} rows={rows} onChange={(next) => setRows(next)} readOnly={readOnly} theme={theme} />
     </div>
   );
 }
