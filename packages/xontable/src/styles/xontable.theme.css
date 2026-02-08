@@ -1,0 +1,29 @@
+.xontable-wrap.theme-dark { border-color: #3a3a3a; background: #1e1f22; --xontable-range: #8ab4f8; --xontable-copy: #e6e6e6; }
+.xontable-wrap.theme-dark .xontable { color: #e6e6e6; background: transparent; }
+
+.xontable-wrap.theme-dark .xontable-cell {
+  border-color: #3a3a3a;
+  background: #1e1f22;
+}
+.xontable-wrap.theme-dark .xontable-select-trigger::after { border-top-color: #b6bcc5; }
+.xontable-wrap.theme-dark .xontable-checkbox { accent-color: #8ab4f8; }
+
+.xontable-wrap.theme-dark .xontable-cell.is-range { background: #1f3526; }
+.xontable-wrap.theme-dark .xontable-cell.is-invalid { background: #4a1f1f; border-color: #e05b5b; box-shadow: inset 0 0 0 1px #e05b5b; }
+.xontable-wrap.theme-dark .xontable-cell.is-copied { outline: 1px dotted #7ad27a; outline-offset: -1px; }
+
+.xontable-wrap.theme-dark .xontable-row.is-zebra .xontable-cell {
+  background: #232428;
+}
+
+.xontable-wrap.theme-dark .xontable-head-cell,
+.xontable-wrap.theme-dark .xontable-rownum-cell,
+.xontable-wrap.theme-dark .xontable-group-cell {
+  background: #2b2d31;
+  color: #e6e6e6;
+}
+
+.xontable-wrap.theme-dark .xontable-head-cell.is-active-col-head,
+.xontable-wrap.theme-dark .xontable-rownum-cell.is-active-rownum {
+  background: #344769;
+}
