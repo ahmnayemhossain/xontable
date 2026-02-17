@@ -11,6 +11,7 @@ npm install xontable
 ## Quick Start
 
 ```tsx
+import React, { useState } from "react";
 import { XOnTable, type ColumnDef } from "xontable";
 import "xontable/styles";
 
@@ -21,11 +22,13 @@ const columns: ColumnDef<Row>[] = [
   { key: "qty", label: "Qty", type: "number", editable: true },
 ];
 
-const [rows, setRows] = useState<Row[]>([
-  { id: "1", name: "Rice", qty: "10" },
-]);
+export default function App() {
+  const [rows, setRows] = useState<Row[]>([
+    { id: "1", name: "Rice", qty: "10" },
+  ]);
 
-<XOnTable columns={columns} rows={rows} onChange={setRows} />;
+  return <XOnTable columns={columns} rows={rows} onChange={setRows} />;
+}
 ```
 
 ## Core Features
