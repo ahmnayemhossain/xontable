@@ -1,6 +1,6 @@
 # xontable
 
-A spreadsheet-like React table component for editable, Excel-style grids.
+A spreadsheet-like React table component with Excel-style editing, selection, clipboard, fill handle, validation, filters, select dropdowns, checkbox cells, and column groups.
 
 ## Install
 
@@ -8,7 +8,7 @@ A spreadsheet-like React table component for editable, Excel-style grids.
 npm install xontable
 ```
 
-## Usage
+## Quick Start
 
 ```tsx
 import React, { useState } from "react";
@@ -31,15 +31,83 @@ export default function App() {
 }
 ```
 
-## Column Types
-- `text`
-- `number`
-- `date`
-- `select`
-- `checkbox`
+## Styles (Required)
+
+Always import the styles once in your app:
+
+```ts
+import "xontable/styles";
+```
+
+## Props
+
+- `columns`: Column definitions
+- `rows`: Data rows
+- `onChange(nextRows, meta)`: Updated rows with change meta
+- `readOnly`: Disable editing
+- `theme`: `"light" | "dark"`
+
+## Column Definition
+
+```ts
+type ColumnDef<Row> = {
+  key: keyof Row | string;
+  label: string;
+  width?: number;
+  editable?: boolean;
+  type?: "text" | "number" | "date" | "select" | "checkbox";
+  validator?: (value: string, row: Row) => string | null;
+  group?: string;
+  groupCollapsible?: boolean;
+  options?: { value: string; label: string }[];
+  getOptions?: (row: Row) => Promise<{ value: string; label: string }[]>;
+  dependsOn?: string; // for cascading selects
+};
+```
+
+## Data Model
+
+Rows are objects:
+
+```ts
+type Row = { id: string; [key: string]: any };
+```
+
+`onChange` receives a **new rows array** whenever edits/paste/fill happen.
+
+## Editing
+- Single click selects
+- Enter or double-click to edit
+- Typing starts edit with typed character
+- Enter commits, Esc cancels, Tab commits and moves
+
+## Keyboard Navigation
+- Arrow keys move selection
+- Tab / Shift+Tab moves horizontally
+- Shift + arrows extends selection
+
+## Copy / Paste
+- TSV compatible with Excel/Google Sheets
+- Use Ctrl/Cmd+C to copy selection
+- Use Ctrl/Cmd+V to paste into table
+
+## Fill Handle
+- Drag the dot at bottom-right of active cell
+- Fills down or across with repeated value
+
+## Validation
+
+Per-column validation:
+
+```ts
+{ key: "qty", label: "Qty", type: "number", validator: (v) => v ? null : "Required" }
+```
+
+Built-in number validation if `type: "number"`.
 
 ## Select Dropdowns
-Use `options` or `getOptions`:
+
+Static options:
 
 ```ts
 { key: "city", label: "City", type: "select", options: [
@@ -47,26 +115,65 @@ Use `options` or `getOptions`:
 ] }
 ```
 
-## Validation
-Use `validator` per column:
+Async options:
 
 ```ts
-{ key: "qty", label: "Qty", type: "number", validator: (v) => v ? null : "Required" }
+{ key: "group", label: "Group", type: "select", getOptions: async () => groupOptions }
 ```
 
-## Readonly & Theme
+Cascading select with `dependsOn`:
+
+```ts
+{ key: "subgroup", label: "Subgroup", type: "select", dependsOn: "group", getOptions: async (row) => options[row.group] }
+```
+
+Invalid values will show validation color.
+
+## Checkbox Cells
+
+```ts
+{ key: "active", label: "Active", type: "checkbox" }
+```
+
+Values are `true` / `false`.
+
+## Column Groups
+
+```ts
+{ key: "name", label: "Name", group: "User" }
+{ key: "active", label: "Active", group: "User", groupCollapsible: true }
+```
+
+Groups render a top header row and can be collapsed if `groupCollapsible` is true.
+
+## Filters
+Each column header shows a filter icon.
+- Search inside the filter menu
+- Toggle values on/off
+
+## Readonly Mode
 
 ```tsx
-<XOnTable readOnly theme="dark" />
+<XOnTable readOnly />
+```
+
+Readonly keeps selection and scrolling but disables editing.
+
+## Theme
+
+```tsx
+<XOnTable theme="dark" />
 ```
 
 ## Requirements
 - React 19+
 - Peer deps: `react`, `react-dom`, `lucide-react`
 
-## Styles
-Required:
+## Troubleshooting
 
-```ts
-import "xontable/styles";
-```
+**Error: Could not resolve "./styles/xontable.css"**
+- Ensure you installed the latest version and it was built/published correctly.
+- Clear Vite cache: delete `node_modules/.vite` and run `npm run dev -- --force`.
+
+## License
+MIT
