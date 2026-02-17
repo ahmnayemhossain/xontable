@@ -3,7 +3,7 @@ import type { ColumnDef } from "../types";
 
 type Option = { value: string; label: string };
 
-type SelectOptionsResult<Row> = {
+type SelectOptionsResult<Row extends Record<string, any>> = {
   getOptions: (row: Row, col: ColumnDef<Row>) => Option[];
   ensureOptions: (row: Row, col: ColumnDef<Row>) => void;
   isLoading: (row: Row, col: ColumnDef<Row>) => boolean;

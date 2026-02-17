@@ -1,6 +1,6 @@
 {
   "name": "xontable",
-  "version": "0.0.0",
+  "version": "0.1.1",
   "private": false,
   "type": "module",
   "main": "./dist/index.js",
@@ -11,17 +11,16 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./styles": "./src/styles/xontable.css"
+    "./styles": "./dist/styles/xontable.css"
   },
   "sideEffects": [
-    "./src/styles/xontable.css"
+    "./dist/styles/xontable.css"
   ],
   "files": [
-    "dist",
-    "src/styles"
+    "dist"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && node ./scripts/copy-styles.mjs",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
     "prepublishOnly": "npm run clean && npm run build"
   },

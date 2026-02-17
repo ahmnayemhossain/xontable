@@ -1,6 +1,6 @@
 import { useCallback, useRef } from "react";
 import type { ClipboardEvent } from "react";
-import { parseTSV, toTSV } from "../utils/tsv";
+import { parseTSV, toTSV } from "../utils";
 
 type ClipboardCatcherOptions = {
   isEditing: boolean;

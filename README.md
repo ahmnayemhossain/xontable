@@ -1,6 +1,6 @@
 # xontable
 
-A lightweight spreadsheet-like React table with editable cells, keyboard navigation, selection, fill handle, filtering, select dropdowns, and checkbox cells.
+A spreadsheet-like React table component with selection, clipboard, fill handle, validation, filters, select dropdowns, and checkbox cells.
 
 ## Install
 
@@ -8,56 +8,56 @@ A lightweight spreadsheet-like React table with editable cells, keyboard navigat
 npm install xontable
 ```
 
-## Basic Usage
+## Quick Start
 
 ```tsx
 import { XOnTable, type ColumnDef } from "xontable";
 import "xontable/styles";
 
-type Row = { id: string; name: string; active: boolean };
+type Row = { id: string; name: string; qty: string };
 
 const columns: ColumnDef<Row>[] = [
-  { key: "name", label: "Name", width: 180, editable: true },
-  { key: "active", label: "Active", width: 80, type: "checkbox", editable: true },
+  { key: "name", label: "Name", editable: true },
+  { key: "qty", label: "Qty", type: "number", editable: true },
 ];
 
-const rows: Row[] = [
-  { id: "1", name: "Rice", active: true },
-  { id: "2", name: "Eggs", active: false },
-];
+const [rows, setRows] = useState<Row[]>([
+  { id: "1", name: "Rice", qty: "10" },
+]);
 
-export function App() {
-  return <XOnTable columns={columns} rows={rows} />;
-}
+<XOnTable columns={columns} rows={rows} onChange={setRows} />;
 ```
 
-## Features
-
-- Single-cell edit with overlay input
-- Keyboard navigation (arrows, Tab, Enter)
-- Range selection + copy/paste TSV
-- Fill handle drag (repeat value)
-- Column groups + collapsible headers
-- Filter menu per column
-- `select` and `checkbox` cell types
-- Validation with error styling
+## Core Features
+- Single-cell select with keyboard navigation
+- Edit on Enter or double click
+- Type to start editing
+- TSV copy/paste compatible with Excel/Google Sheets
+- Fill handle drag to repeat values
+- Per-column validation
+- Select dropdowns and checkbox cells
+- Filters and column groups
 - Light and dark themes
+- Readonly mode styling
 
-## Props (XOnTable)
+## Props (Most Used)
+- `columns`: Column definitions
+- `rows`: Data rows
+- `onChange(nextRows, meta)`: Receives updated rows
+- `readOnly`: Disable editing
+- `theme`: `"light" | "dark"`
 
-- `columns`: Column definitions with types and validation
-- `rows`: Array of row objects
-- `rowIdKey`: Key for stable row ids (default `id`)
-- `readOnly`: Disable edits if `true`
-- `theme`: `light` or `dark`
-- `onChange`: Called with updated rows and meta
+## Styles
+Always import:
 
-## Styling
+```ts
+import "xontable/styles";
+```
 
-- Import base styles: `import "xontable/styles";`
-- Themes are controlled by the `theme` prop
+## Notes
+- React 19+ is required.
+- You must install peer deps: `react`, `react-dom`, `lucide-react`.
 
-## Repo Layout
-
-- `packages/xontable` — library source
-- `apps/playground` — Vite demo app
+## Docs
+- Package usage: `packages/xontable/README.md`
+- Changelog: `CHANGELOG.md`

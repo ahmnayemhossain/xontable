@@ -9,16 +9,16 @@ type GroupHeader = {
   collapsed: boolean;
 };
 
-type GroupInfo<Row> = {
+type GroupInfo<Row extends Record<string, any>> = {
   key: string;
   label: string;
   cols: Array<{ col: ColumnDef<Row>; idx: number }>;
   collapsible: boolean;
 };
 
-type VisibleCol<Row> = { col: ColumnDef<Row>; idx: number | null };
+type VisibleCol<Row extends Record<string, any>> = { col: ColumnDef<Row>; idx: number | null };
 
-type ColumnGroupsOptions<Row> = {
+type ColumnGroupsOptions<Row extends Record<string, any>> = {
   columns: ColumnDef<Row>[];
   collapsedWidth?: number;
 };

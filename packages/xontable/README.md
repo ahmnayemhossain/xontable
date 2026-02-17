@@ -1,6 +1,6 @@
 # xontable
 
-A lightweight spreadsheet-like React table with editable cells, keyboard navigation, fill handle, filtering, and select/checkbox support.
+A spreadsheet-like React table component for editable, Excel-style grids.
 
 ## Install
 
@@ -14,24 +14,56 @@ npm install xontable
 import { XOnTable, type ColumnDef } from "xontable";
 import "xontable/styles";
 
-type Row = { id: string; name: string; active: boolean };
+type Row = { id: string; name: string; qty: string };
 
 const columns: ColumnDef<Row>[] = [
-  { key: "name", label: "Name", width: 180, editable: true },
-  { key: "active", label: "Active", width: 80, type: "checkbox", editable: true },
+  { key: "name", label: "Name", editable: true },
+  { key: "qty", label: "Qty", type: "number", editable: true },
 ];
 
-const rows: Row[] = [
-  { id: "1", name: "Rice", active: true },
-  { id: "2", name: "Eggs", active: false },
-];
+const [rows, setRows] = useState<Row[]>([
+  { id: "1", name: "Rice", qty: "10" },
+]);
 
-export function App() {
-  return <XOnTable columns={columns} rows={rows} />;
-}
+<XOnTable columns={columns} rows={rows} onChange={setRows} />;
 ```
 
-## Notes
-- `type: "select"` shows a dropdown arrow and supports async `getOptions`.
-- `type: "checkbox"` renders a checkbox and enforces `true/false` validation.
-- Styling lives in `xontable/styles`.
+## Column Types
+- `text`
+- `number`
+- `date`
+- `select`
+- `checkbox`
+
+## Select Dropdowns
+Use `options` or `getOptions`:
+
+```ts
+{ key: "city", label: "City", type: "select", options: [
+  { value: "tokyo", label: "Tokyo" }
+] }
+```
+
+## Validation
+Use `validator` per column:
+
+```ts
+{ key: "qty", label: "Qty", type: "number", validator: (v) => v ? null : "Required" }
+```
+
+## Readonly & Theme
+
+```tsx
+<XOnTable readOnly theme="dark" />
+```
+
+## Requirements
+- React 19+
+- Peer deps: `react`, `react-dom`, `lucide-react`
+
+## Styles
+Required:
+
+```ts
+import "xontable/styles";
+```

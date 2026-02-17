@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
-import { cellKey } from "../utils/cellKey";
+import { cellKey } from "../utils";
 import type { ColumnDef } from "../types";
 
 export function useValidation<Row extends Record<string, any>>(

@@ -62,8 +62,10 @@ export function useTableModel<Row extends Record<string, any>>(options: TableMod
       if (real == null && createRow) { real = next.length; next.push(createRow()); map[u.r] = real; }
       const row = real == null ? undefined : next[real];
       if (!col || !row || col.editable === false) continue;
-      row[col.key] = u.value as any;
-      const err = validateCell(u.r, u.c, u.value, row); if (real != null) setCellError(real, u.c, err);
+      const nextRow = { ...(row as Record<string, any>) };
+      nextRow[col.key as string] = u.value as any;
+      next[real] = nextRow as Row;
+      const err = validateCell(u.r, u.c, u.value, nextRow as Row); if (real != null) setCellError(real, u.c, err);
       changed = true;
       lastCellRef.current = { r: u.r, c: u.c };
     }

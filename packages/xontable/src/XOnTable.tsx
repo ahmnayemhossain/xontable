@@ -1,20 +1,8 @@
 import React from "react";
 import "./styles/xontable.css";
 import type { XOnTableProps } from "./types";
-import { SelectMenu } from "./components/SelectMenu";
-import { XOnTableGrid } from "./components/XOnTableGrid";
-import { useClipboardCatcher } from "./hooks/useClipboardCatcher";
-import { useColumnFilters } from "./hooks/useColumnFilters";
-import { useColumnGroups } from "./hooks/useColumnGroups";
-import { useColumnResize } from "./hooks/useColumnResize";
-import { useEditorOverlay } from "./hooks/useEditorOverlay";
-import { useFillHandle } from "./hooks/useFillHandle";
-import { useGridKeydown } from "./hooks/useGridKeydown";
-import { useOutsideClick } from "./hooks/useOutsideClick";
-import { useRangeSelection } from "./hooks/useRangeSelection";
-import { useSelectOptions } from "./hooks/useSelectOptions";
-import { useTableModel } from "./hooks/useTableModel";
-import { useAutoRows } from "./hooks/useAutoRows";
+import { SelectMenu, XOnTableGrid } from "./components";
+import { useAutoRows, useClipboardCatcher, useColumnFilters, useColumnGroups, useColumnResize, useEditorOverlay, useFillHandle, useGridKeydown, useOutsideClick, useRangeSelection, useSelectOptions, useTableModel } from "./hooks";
 type CellUpdate = { r: number; c: number; value: any }; const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 
 export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<Row>) {
