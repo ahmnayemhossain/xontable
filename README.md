@@ -57,6 +57,15 @@ Always import:
 import "xontable/styles";
 ```
 
+## Dark Theme Colors
+
+```tsx
+<XOnTable
+  theme="dark"
+  darkThemeColors={{ bg: "#111318", headBg: "#1c1f26", accent: "#7aa2ff" }}
+/>
+```
+
 ## Notes
 - React 19+ is required.
 - You must install peer deps: `react`, `react-dom`, `lucide-react`.

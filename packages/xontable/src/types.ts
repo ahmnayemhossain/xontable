@@ -27,5 +27,29 @@ export type XOnTableProps<Row extends Record<string, any> = any> = {
   rowIdKey?: keyof Row; // default: "id"
   readOnly?: boolean;
   theme?: "light" | "dark";
+  darkThemeColors?: Partial<{
+    bg: string;
+    border: string;
+    text: string;
+    cellBg: string;
+    headBg: string;
+    rownumBg: string;
+    groupBg: string;
+    zebraBg: string;
+    activeHeadBg: string;
+    range: string;
+    copy: string;
+    accent: string;
+    select: string;
+    invalidBg: string;
+    invalidBorder: string;
+    editorBg: string;
+    editorText: string;
+    readonlyBg: string;
+    readonlyBorder: string;
+    readonlyHeadBg: string;
+    readonlyRownumBg: string;
+    readonlyZebraBg: string;
+  }>;
   onChange?: (rows: Row[], meta: XOnTableMeta) => void;
 };

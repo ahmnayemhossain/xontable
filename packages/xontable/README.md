@@ -180,6 +180,25 @@ Readonly keeps selection and scrolling but disables editing.
 <XOnTable theme="dark" />
 ```
 
+### Dark Theme Colors (Props)
+
+You can override dark theme colors via `darkThemeColors`:
+
+```tsx
+<XOnTable
+  theme="dark"
+  darkThemeColors={{
+    bg: "#111318",
+    border: "#2b2f36",
+    text: "#e6e6e6",
+    headBg: "#1c1f26",
+    zebraBg: "#15181e",
+    activeHeadBg: "#23304a",
+    accent: "#7aa2ff",
+  }}
+/>
+```
+
 ## Requirements
 - React 19+
 - Peer deps: `react`, `react-dom`, `lucide-react`

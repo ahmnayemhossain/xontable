@@ -6,7 +6,7 @@ import { useAutoRows, useClipboardCatcher, useColumnFilters, useColumnGroups, us
 type CellUpdate = { r: number; c: number; value: any }; const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 
 export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<Row>) {
-  const { columns, rows, rowIdKey = "id" as keyof Row, onChange, readOnly = false, theme = "light" } = props;
+  const { columns, rows, rowIdKey = "id" as keyof Row, onChange, readOnly = false, theme = "light", darkThemeColors } = props;
   const activeCellRef = React.useRef<HTMLDivElement | null>(null);
   const [editingRowId, setEditingRowId] = React.useState<string | null>(null);
   const { normalizedRows, handleChange, createRow } = useAutoRows(columns, rows, rowIdKey, onChange, editingRowId);
@@ -96,9 +96,19 @@ export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<R
     onGridKeyDown(e);
   }, [active.c, active.r, onGridKeyDown, selection]);
   useOutsideClick({ isOpen: filters.filterOpenKey != null, onClose: filters.closeFilter });
-
+  const darkVars = theme === "dark" && darkThemeColors ? ({
+    "--xontable-dark-bg": darkThemeColors.bg, "--xontable-dark-border": darkThemeColors.border, "--xontable-dark-text": darkThemeColors.text,
+    "--xontable-dark-cell-bg": darkThemeColors.cellBg, "--xontable-dark-head-bg": darkThemeColors.headBg, "--xontable-dark-rownum-bg": darkThemeColors.rownumBg,
+    "--xontable-dark-group-bg": darkThemeColors.groupBg, "--xontable-dark-zebra-bg": darkThemeColors.zebraBg, "--xontable-dark-active-head-bg": darkThemeColors.activeHeadBg,
+    "--xontable-dark-range": darkThemeColors.range, "--xontable-dark-copy": darkThemeColors.copy, "--xontable-dark-accent": darkThemeColors.accent,
+    "--xontable-dark-select": darkThemeColors.select, "--xontable-dark-invalid-bg": darkThemeColors.invalidBg, "--xontable-dark-invalid-border": darkThemeColors.invalidBorder,
+    "--xontable-dark-editor-bg": darkThemeColors.editorBg, "--xontable-dark-editor-text": darkThemeColors.editorText,
+    "--xontable-dark-readonly-bg": darkThemeColors.readonlyBg, "--xontable-dark-readonly-border": darkThemeColors.readonlyBorder,
+    "--xontable-dark-readonly-head-bg": darkThemeColors.readonlyHeadBg, "--xontable-dark-readonly-rownum-bg": darkThemeColors.readonlyRownumBg,
+    "--xontable-dark-readonly-zebra-bg": darkThemeColors.readonlyZebraBg,
+  } as React.CSSProperties) : undefined;
   return (
-    <div className={`xontable-wrap theme-${theme}${readOnly ? " is-readonly" : ""}`}>
+    <div className={`xontable-wrap theme-${theme}${readOnly ? " is-readonly" : ""}`} style={darkVars}>
       <textarea ref={clipRef} className="xontable-clip" name="xontable-clip" aria-hidden="true" tabIndex={-1} onCopy={onCopy} onPaste={onPaste} onKeyDown={onGridKeyDownWithCopy} readOnly />
       <div
         className={`xontable-surface${filters.filterOpenKey ? " is-filter-open" : ""}`}
