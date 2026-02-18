@@ -139,12 +139,27 @@ Values are `true` / `false`.
 
 ## Column Groups
 
+Group columns by giving the same `group` name:
+
 ```ts
-{ key: "name", label: "Name", group: "User" }
+const columns: ColumnDef<Row>[] = [
+  { key: "name", label: "Name", group: "User" },
+  { key: "active", label: "Active", type: "checkbox", group: "User" },
+  { key: "group", label: "Group", type: "select", group: "Account Details" },
+  { key: "subgroup", label: "Subgroup", type: "select", group: "Account Details" },
+  { key: "city", label: "City", type: "select", group: "Login info" },
+];
+```
+
+Collapsible groups:
+
+```ts
 { key: "active", label: "Active", group: "User", groupCollapsible: true }
 ```
 
-Groups render a top header row and can be collapsed if `groupCollapsible` is true.
+Notes:
+- The top header row shows group labels.
+- If any column in a group has `groupCollapsible: true`, the group is collapsible.
 
 ## Filters
 Each column header shows a filter icon.

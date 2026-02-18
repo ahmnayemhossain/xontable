@@ -1,7 +1,14 @@
 import React from "react";
 import { XOnTable, type ColumnDef } from "xontable";
 
-type Row = { id: string; name: string; group: string; subgroup: string; city: string; active: boolean };
+type Row = {
+  id: string;
+  name: string;
+  group: string;
+  subgroup: string;
+  city: string;
+  active: boolean;
+};
 
 const groupOptions = [
   { value: "food", label: "Food" },
@@ -27,7 +34,14 @@ const cityOptions = [
 
 const columns: ColumnDef<Row>[] = [
   { key: "name", label: "Name", width: 180, group: "User", editable: true },
-  { key: "active", label: "Active", width: 80, group: "User", type: "checkbox", editable: true },
+  {
+    key: "active",
+    label: "Active",
+    width: 80,
+    group: "User",
+    type: "checkbox",
+    editable: true,
+  },
   {
     key: "group",
     label: "Group",
@@ -60,9 +74,30 @@ const columns: ColumnDef<Row>[] = [
 
 export default function App() {
   const [rows, setRows] = React.useState<Row[]>([
-    { id: "1", name: "Rice", active: true, group: "food", subgroup: "fruits", city: "toronto" },
-    { id: "2", name: "Eggs", active: false, group: "food", subgroup: "snacks", city: "london" },
-    { id: "3", name: "Phone", active: true, group: "tech", subgroup: "mobile", city: "tokyo" },
+    {
+      id: "1",
+      name: "Rice",
+      active: true,
+      group: "food",
+      subgroup: "fruits",
+      city: "toronto",
+    },
+    {
+      id: "2",
+      name: "Eggs",
+      active: false,
+      group: "food",
+      subgroup: "snacks",
+      city: "london",
+    },
+    {
+      id: "3",
+      name: "Phone",
+      active: true,
+      group: "tech",
+      subgroup: "mobile",
+      city: "tokyo",
+    },
   ]);
   const [readOnly, setReadOnly] = React.useState(false);
   const [theme, setTheme] = React.useState<"light" | "dark">("light");
@@ -71,15 +106,31 @@ export default function App() {
     <div style={{ padding: 20 }}>
       <div style={{ display: "flex", gap: 16, marginBottom: 12 }}>
         <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-          <input name="themeToggle" type="checkbox" checked={theme === "dark"} onChange={() => setTheme((t) => (t === "dark" ? "light" : "dark"))} />
+          <input
+            name="themeToggle"
+            type="checkbox"
+            checked={theme === "dark"}
+            onChange={() => setTheme((t) => (t === "dark" ? "light" : "dark"))}
+          />
           Dark mode
         </label>
         <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-          <input name="readonlyToggle" type="checkbox" checked={readOnly} onChange={() => setReadOnly((v) => !v)} />
+          <input
+            name="readonlyToggle"
+            type="checkbox"
+            checked={readOnly}
+            onChange={() => setReadOnly((v) => !v)}
+          />
           Readonly mode
         </label>
       </div>
-      <XOnTable columns={columns} rows={rows} onChange={(next) => setRows(next)} readOnly={readOnly} theme={theme} />
+      <XOnTable
+        columns={columns}
+        rows={rows}
+        onChange={(next) => setRows(next)}
+        readOnly={readOnly}
+        theme={theme}
+      />
     </div>
   );
 }

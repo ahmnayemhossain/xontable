@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.1.3] - 2026-02-17
+- Copy full styles directory into dist for publish
+
 ## [0.1.2] - 2026-02-17
 - Fix published styles by copying full styles directory into dist
 

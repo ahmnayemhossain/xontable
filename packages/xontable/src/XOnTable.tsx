@@ -101,7 +101,7 @@ export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<R
     <div className={`xontable-wrap theme-${theme}${readOnly ? " is-readonly" : ""}`}>
       <textarea ref={clipRef} className="xontable-clip" name="xontable-clip" aria-hidden="true" tabIndex={-1} onCopy={onCopy} onPaste={onPaste} onKeyDown={onGridKeyDownWithCopy} readOnly />
       <div
-        className="xontable-surface"
+        className={`xontable-surface${filters.filterOpenKey ? " is-filter-open" : ""}`}
         tabIndex={0}
         onFocus={(e) => {
           const target = e.target as HTMLElement | null;
