@@ -68,7 +68,7 @@ import "xontable/styles";
 
 ## Notes
 - React 19+ is required.
-- You must install peer deps: `react`, `react-dom`, `lucide-react`.
+- You must install peer deps: `react`, `react-dom`.
 
 ## Docs
 - Package usage: `packages/xontable/README.md`

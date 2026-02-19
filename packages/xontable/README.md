@@ -201,7 +201,7 @@ You can override dark theme colors via `darkThemeColors`:
 
 ## Requirements
 - React 19+
-- Peer deps: `react`, `react-dom`, `lucide-react`
+- Peer deps: `react`, `react-dom`
 
 ## Troubleshooting
 

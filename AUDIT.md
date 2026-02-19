@@ -40,4 +40,6 @@ The codebase is generally stable, but there are a few operational and publish-ti
 
 ## Status
 - No TODO/FIXME markers found in source.
-- No automated tests run during this audit.
+- Build checks run:
+  - `packages/xontable`: `npm run build` (OK)
+  - `apps/playground`: `npm run build` (OK)
