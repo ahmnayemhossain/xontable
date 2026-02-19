@@ -1,69 +1,51 @@
-# xontable Consumer Guide
+# xontable Developer Guide
 
-This guide shows how to install and use xontable in any React app.
+This document is for package developers/maintainers.
 
-## 1. Install
+## Architecture
+- `XOnTable.tsx`: composition layer (wires hooks + components)
+- `components/`: grid, header, filter menu, status bar, select menu
+- `hooks/`: selection, clipboard, table model, editor overlay, filters
+- `utils/`: tsv, cellKey
+- `styles/`: base, filter, theme, bundle entry
+
+## Build
 
 ```bash
-npm install xontable
+cd packages/xontable
+npm run build
 ```
 
-## 2. Import Styles
+Build outputs:
+- `dist/*.js` and `dist/*.d.ts`
+- `dist/styles/*` (copied from `src/styles`)
 
-```ts
-import "xontable/styles";
+## Publish
+
+```bash
+cd packages/xontable
+npm run build
+npm publish
 ```
 
-## 3. Basic Table
+## Key Behaviors
+- Selection + keyboard navigation
+- Edit overlay (fixed position)
+- Clipboard TSV via hidden textarea
+- Fill handle drag
+- Validation map by cell key
+- Column groups + resizable columns
+- Optional status bar
 
-```tsx
-import { XOnTable, type ColumnDef } from "xontable";
+## Styling Notes
+- All public styles come from `src/styles/*`
+- Dark theme supports `darkThemeColors` overrides
+- Status bar uses `.xontable-status*` classes
 
-type Row = { id: string; name: string; qty: string };
+## Testing
+- Run `npm run build` in `packages/xontable`
+- Run `npm run build` in `apps/playground` to validate integration
 
-const columns: ColumnDef<Row>[] = [
-  { key: "name", label: "Name", editable: true },
-  { key: "qty", label: "Qty", type: "number", editable: true },
-];
-
-const [rows, setRows] = useState<Row[]>([
-  { id: "1", name: "Rice", qty: "10" },
-]);
-
-<XOnTable columns={columns} rows={rows} onChange={setRows} />;
-```
-
-## 4. Features
-- Keyboard navigation
-- Enter or double-click to edit
-- Type to edit
-- Copy/paste TSV
-- Fill handle
-- Filters and column groups
-- Select dropdowns and checkbox cells
-- Validation per column
-- Readonly mode and dark theme
-
-## 5. Validation Example
-
-```ts
-{ key: "qty", label: "Qty", type: "number", validator: (v) => v ? null : "Required" }
-```
-
-## 6. Select Example
-
-```ts
-{ key: "city", label: "City", type: "select", options: [
-  { value: "tokyo", label: "Tokyo" }
-] }
-```
-
-## 7. Readonly + Theme
-
-```tsx
-<XOnTable readOnly theme="dark" />
-```
-
-## 8. Requirements
-- React 19+
-- Peer deps: `react`, `react-dom`, `lucide-react`
+## Troubleshooting
+- Vite `Outdated Optimize Dep`: clear `node_modules/.vite` and run `npm run dev -- --force`
+- Missing CSS: ensure `dist/styles` is copied in build

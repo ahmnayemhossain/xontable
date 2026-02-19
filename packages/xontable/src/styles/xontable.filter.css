@@ -63,3 +63,18 @@
   gap: 6px;
   font-size: 12px;
 }
+
+.xontable-wrap.theme-dark .xontable-filter-menu {
+  background: var(--xontable-dark-head-bg, #2b2d31);
+  border-color: var(--xontable-dark-border, #3a3a3a);
+  color: var(--xontable-dark-text, #e6e6e6);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+.xontable-wrap.theme-dark .xontable-filter-search {
+  background: var(--xontable-dark-cell-bg, #1e1f22);
+  border-color: var(--xontable-dark-border, #3a3a3a);
+  color: var(--xontable-dark-text, #e6e6e6);
+}
+.xontable-wrap.theme-dark .xontable-filter-item span {
+  color: var(--xontable-dark-text, #e6e6e6);
+}

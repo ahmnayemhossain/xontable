@@ -1,12 +1,12 @@
 import React from "react";
 import "./styles/xontable.css";
 import type { XOnTableProps } from "./types";
-import { SelectMenu, XOnTableGrid } from "./components";
+import { SelectMenu, XOnTableGrid, XOnTableStatusBar } from "./components";
 import { useAutoRows, useClipboardCatcher, useColumnFilters, useColumnGroups, useColumnResize, useEditorOverlay, useFillHandle, useGridKeydown, useOutsideClick, useRangeSelection, useSelectOptions, useTableModel } from "./hooks";
 type CellUpdate = { r: number; c: number; value: any }; const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 
 export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<Row>) {
-  const { columns, rows, rowIdKey = "id" as keyof Row, onChange, readOnly = false, theme = "light", darkThemeColors } = props;
+  const { columns, rows, rowIdKey = "id" as keyof Row, onChange, readOnly = false, theme = "light", showStatusBar = false, darkThemeColors } = props;
   const activeCellRef = React.useRef<HTMLDivElement | null>(null);
   const [editingRowId, setEditingRowId] = React.useState<string | null>(null);
   const { normalizedRows, handleChange, createRow } = useAutoRows(columns, rows, rowIdKey, onChange, editingRowId);
@@ -16,7 +16,7 @@ export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<R
   const selection = useRangeSelection();
   const [copiedBounds, setCopiedBounds] = React.useState<{ r1: number; r2: number; c1: number; c2: number } | null>(null);
   React.useEffect(() => { resetWidths(); }, [columns, resetWidths]);
-  const { data, active, setActive, getValue, updateCells, moveActive, rowCount, colCount, hasError, getError, setCellErrorView, undo, redo } = useTableModel<Row>({
+  const { data, active, setActive, getValue, updateCells, moveActive, rowCount, colCount, hasError, getError, setCellErrorView, errorList, undo, redo } = useTableModel<Row>({
     columns: visibleColumns.map((v) => v.col),
     rows: normalizedRows,
     rowFilter: filters.rowFilter,
@@ -107,6 +107,7 @@ export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<R
     "--xontable-dark-readonly-head-bg": darkThemeColors.readonlyHeadBg, "--xontable-dark-readonly-rownum-bg": darkThemeColors.readonlyRownumBg,
     "--xontable-dark-readonly-zebra-bg": darkThemeColors.readonlyZebraBg,
   } as React.CSSProperties) : undefined;
+  const onSelectError = React.useCallback((r: number, c: number) => { setActive({ r, c }); selection.startSelection({ r, c }); focusClipboard(); }, [focusClipboard, selection, setActive]);
   return (
     <div className={`xontable-wrap theme-${theme}${readOnly ? " is-readonly" : ""}`} style={darkVars}>
       <textarea ref={clipRef} className="xontable-clip" name="xontable-clip" aria-hidden="true" tabIndex={-1} onCopy={onCopy} onPaste={onPaste} onKeyDown={onGridKeyDownWithCopy} readOnly />
@@ -139,6 +140,7 @@ export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<R
           onFilterToggle={filters.toggleFilterValue} onFilterToggleAll={filters.toggleAll}
         />
       </div>
+      {showStatusBar && <XOnTableStatusBar errors={errorList} columns={visibleColumns} onSelect={onSelectError} />}
       {isEditing && editorRect && (
         <input ref={editorRef} className="xontable-editor" name="xontable-editor" value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={onEditorKeyDown} onBlur={() => { commitEdit(); validateSelect(active.r, active.c, draft, activeRow); }} style={{ position: "fixed", left: editorRect.left, top: editorRect.top, width: editorRect.width, height: editorRect.height }} />
       )}

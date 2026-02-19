@@ -41,7 +41,7 @@ export function useTableModel<Row extends Record<string, any>>(options: TableMod
     const v = row && col ? row[col.key] : ""; return v == null ? "" : String(v);
   }, [columns, view.map]);
 
-  const { validateCell, setCellError, hasError, getError } = useValidation<Row>(columns, getRow, getValue);
+  const { validateCell, setCellError, hasError, getError, errors } = useValidation<Row>(columns, getRow, getValue);
 
   const setCellErrorView = useCallback((r: number, c: number, msg: string | null) => {
     const real = view.map[r]; if (real == null) return; setCellError(real, c, msg);
@@ -99,6 +99,16 @@ export function useTableModel<Row extends Record<string, any>>(options: TableMod
     const real = view.map[r]; return real == null ? null : getError(real, c);
   }, [getError, view.map]);
 
+  const errorList = useMemo(() => {
+    const map = new Map<number, number>();
+    view.map.forEach((real, idx) => { if (real != null) map.set(real, idx); });
+    return Object.entries(errors).flatMap(([key, message]) => {
+      const [r, c] = key.split(":").map(Number);
+      const vr = map.get(r);
+      return vr == null || Number.isNaN(c) ? [] : [{ r: vr, c, message }];
+    });
+  }, [errors, view.map]);
+
   return {
     data: view.list,
     rawData: dataRef.current,
@@ -112,6 +122,7 @@ export function useTableModel<Row extends Record<string, any>>(options: TableMod
     hasError: hasErrorView,
     getError: getErrorView,
     setCellErrorView,
+    errorList,
     undo,
     redo,
   };

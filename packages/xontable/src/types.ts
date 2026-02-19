@@ -27,6 +27,7 @@ export type XOnTableProps<Row extends Record<string, any> = any> = {
   rowIdKey?: keyof Row; // default: "id"
   readOnly?: boolean;
   theme?: "light" | "dark";
+  showStatusBar?: boolean;
   darkThemeColors?: Partial<{
     bg: string;
     border: string;

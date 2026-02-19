@@ -45,8 +45,8 @@
 }
 .xontable-head-cell.is-active-col-head,
 .xontable-rownum-cell.is-active-rownum { background: #cfe3ff; }
-.xontable-cell.is-invalid { background: #ffe5e5; border: 1px solid #d92d2d; box-shadow: inset 0 0 0 1px #d92d2d; }
-.xontable-cell.is-invalid:hover { background: #ffd6d6; }
+.xontable-cell.is-invalid { background: #fff1f1; border: 1px solid #f3b1b1; box-shadow: inset 0 0 0 0 #f3b1b1; }
+.xontable-cell.is-invalid:hover { background: #ffe7e7; }
 .xontable-cell.is-fill-preview { background: #e8f0fe; }
 .xontable-fill-handle { position: absolute; width: 14px; height: 14px; right: -7px; bottom: -7px; background: #0b65d4; border: 1px solid #fff; border-radius: 4px; cursor: crosshair; }
 .xontable-editor { box-sizing: border-box; border: 2px solid #1a73e8; padding: 2px 6px 2px 8px; font: inherit; background: #fff; outline: none; line-height: 1.2; }
@@ -54,6 +54,19 @@
 .xontable-select-menu { background: #fff; border: 1px solid #e1e4ea; box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12); border-radius: 4px; padding: 4px 0; z-index: 30; max-height: 220px; overflow: auto; }
 .xontable-select-item { width: 100%; text-align: left; padding: 6px 10px; border: 0; background: transparent; cursor: pointer; font-size: 12px; }
 .xontable-select-item:hover, .xontable-select-item.is-active { background: #e9f1ff; }
+.xontable-status { display: flex; align-items: center; gap: 8px; padding: 6px 8px; font-size: 12px; border-top: 1px solid #e6e8ee; background: #f9fafb; color: #374151; }
+.xontable-status-count { display: inline-flex; align-items: center; gap: 6px; font-weight: 700; background: #eef2ff; color: #3730a3; padding: 2px 8px; border-radius: 999px; }
+.xontable-status-count.is-error { background: #fff1f2; color: #b91c1c; }
+.xontable-status-num { width: 18px; height: 18px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; background: #3730a3; color: #fff; font-size: 11px; }
+.xontable-status-count.is-error .xontable-status-num { background: #dc2626; }
+.xontable-status-label { letter-spacing: 0.2px; }
+.xontable-status-item { border: 1px solid #e6e8ee; background: #fff; color: #1f2937; cursor: pointer; padding: 2px 6px; border-radius: 999px; text-align: left; white-space: nowrap; }
+.xontable-status-item.is-error { background: #ffe7e7; border-color: #dc2626; color: #a10d0d; }
+.xontable-status-item:hover { background: #eef2ff; border-color: #c7d2fe; }
+.xontable-status-item.is-error:hover { background: #ffdada; border-color: #f2a0a0; }
+.xontable-status-item.is-chip-0 { background: #eef2ff; border-color: #c7d2fe; color: #3730a3; }
+.xontable-status-item.is-chip-1 { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
+.xontable-status-item.is-chip-2 { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
 
 .xontable-wrap.is-readonly { background: #fff; border-color: #e4e7ec; }
 .xontable-wrap.is-readonly .xontable { color: #222; }
@@ -69,4 +82,4 @@
 .xontable-wrap.is-readonly .xontable-fill-handle { display: none; }
 .xontable-wrap.is-readonly .xontable-select-trigger { display: none; }
 .xontable-wrap.is-readonly .xontable-checkbox { accent-color: #49b86e; }
-.xontable-wrap.is-readonly .xontable-cell.is-invalid { background: #ffecec; border-color: #e07a7a; box-shadow: inset 0 0 0 1px #e07a7a; }
+.xontable-wrap.is-readonly .xontable-cell.is-invalid { background: #fff1f1; border-color: #f4c2c2; box-shadow: inset 0 0 0 0 #f4c2c2; }

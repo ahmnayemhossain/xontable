@@ -46,6 +46,8 @@ import "xontable/styles";
 - `onChange(nextRows, meta)`: Updated rows with change meta
 - `readOnly`: Disable editing
 - `theme`: `"light" | "dark"`
+- `showStatusBar`: Show validation summary bar
+- `darkThemeColors`: Override dark theme colors
 
 ## Column Definition
 
@@ -65,26 +67,11 @@ type ColumnDef<Row> = {
 };
 ```
 
-## Data Model
-
-Rows are objects:
-
-```ts
-type Row = { id: string; [key: string]: any };
-```
-
-`onChange` receives a **new rows array** whenever edits/paste/fill happen.
-
 ## Editing
 - Single click selects
 - Enter or double-click to edit
 - Typing starts edit with typed character
 - Enter commits, Esc cancels, Tab commits and moves
-
-## Keyboard Navigation
-- Arrow keys move selection
-- Tab / Shift+Tab moves horizontally
-- Shift + arrows extends selection
 
 ## Copy / Paste
 - TSV compatible with Excel/Google Sheets
@@ -103,11 +90,13 @@ Per-column validation:
 { key: "qty", label: "Qty", type: "number", validator: (v) => v ? null : "Required" }
 ```
 
-Built-in number validation if `type: "number"`.
+## Status Bar
+
+```tsx
+<XOnTable showStatusBar />
+```
 
 ## Select Dropdowns
-
-Static options:
 
 ```ts
 { key: "city", label: "City", type: "select", options: [
@@ -115,31 +104,13 @@ Static options:
 ] }
 ```
 
-Async options:
-
-```ts
-{ key: "group", label: "Group", type: "select", getOptions: async () => groupOptions }
-```
-
-Cascading select with `dependsOn`:
-
-```ts
-{ key: "subgroup", label: "Subgroup", type: "select", dependsOn: "group", getOptions: async (row) => options[row.group] }
-```
-
-Invalid values will show validation color.
-
 ## Checkbox Cells
 
 ```ts
 { key: "active", label: "Active", type: "checkbox" }
 ```
 
-Values are `true` / `false`.
-
 ## Column Groups
-
-Group columns by giving the same `group` name:
 
 ```ts
 const columns: ColumnDef<Row>[] = [
@@ -151,29 +122,6 @@ const columns: ColumnDef<Row>[] = [
 ];
 ```
 
-Collapsible groups:
-
-```ts
-{ key: "active", label: "Active", group: "User", groupCollapsible: true }
-```
-
-Notes:
-- The top header row shows group labels.
-- If any column in a group has `groupCollapsible: true`, the group is collapsible.
-
-## Filters
-Each column header shows a filter icon.
-- Search inside the filter menu
-- Toggle values on/off
-
-## Readonly Mode
-
-```tsx
-<XOnTable readOnly />
-```
-
-Readonly keeps selection and scrolling but disables editing.
-
 ## Theme
 
 ```tsx
@@ -182,20 +130,10 @@ Readonly keeps selection and scrolling but disables editing.
 
 ### Dark Theme Colors (Props)
 
-You can override dark theme colors via `darkThemeColors`:
-
 ```tsx
 <XOnTable
   theme="dark"
-  darkThemeColors={{
-    bg: "#111318",
-    border: "#2b2f36",
-    text: "#e6e6e6",
-    headBg: "#1c1f26",
-    zebraBg: "#15181e",
-    activeHeadBg: "#23304a",
-    accent: "#7aa2ff",
-  }}
+  darkThemeColors={{ bg: "#111318", headBg: "#1c1f26", accent: "#7aa2ff" }}
 />
 ```
 

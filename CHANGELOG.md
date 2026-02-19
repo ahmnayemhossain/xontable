@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.1] - 2026-02-19
+- Status bar for validation summary (optional)
+- Dark theme filter menu styling
+- Inline SVG icons (remove lucide-react)
+- Lighter validation styling
+
+## [0.1.7] - 2026-02-19
+- (reserved)
+
+## [0.1.6] - 2026-02-17
+- Dark theme filter menu styling
+
 ## [0.1.5] - 2026-02-17
 - Replace lucide-react icons with inline SVGs
 

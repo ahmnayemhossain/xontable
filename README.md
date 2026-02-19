@@ -42,6 +42,7 @@ export default function App() {
 - Filters and column groups
 - Light and dark themes
 - Readonly mode styling
+- Validation status bar (optional)
 
 ## Props (Most Used)
 - `columns`: Column definitions
@@ -49,21 +50,14 @@ export default function App() {
 - `onChange(nextRows, meta)`: Receives updated rows
 - `readOnly`: Disable editing
 - `theme`: `"light" | "dark"`
+- `showStatusBar`: Show validation summary bar
+- `darkThemeColors`: Override dark theme colors
 
 ## Styles
 Always import:
 
 ```ts
 import "xontable/styles";
-```
-
-## Dark Theme Colors
-
-```tsx
-<XOnTable
-  theme="dark"
-  darkThemeColors={{ bg: "#111318", headBg: "#1c1f26", accent: "#7aa2ff" }}
-/>
 ```
 
 ## Notes

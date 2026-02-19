@@ -130,6 +130,7 @@ export default function App() {
         onChange={(next) => setRows(next)}
         readOnly={readOnly}
         theme={theme}
+        showStatusBar
       />
     </div>
   );
