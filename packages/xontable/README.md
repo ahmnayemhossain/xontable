@@ -141,18 +141,6 @@ const columns: ColumnDef<Row>[] = [
 - React 19+
 - Peer deps: `react`, `react-dom`
 
-## Keywords
-- spreadsheet
-- grid
-- table
-- react
-- typescript
-- editable
-- data-grid
-- excel
-- google-sheets
-- clipboard
-
 ## Troubleshooting
 
 **Error: Could not resolve "./styles/xontable.css"**
