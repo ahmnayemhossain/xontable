@@ -64,6 +64,18 @@ import "xontable/styles";
 - React 19+ is required.
 - You must install peer deps: `react`, `react-dom`.
 
+## Keywords
+- spreadsheet
+- grid
+- table
+- react
+- typescript
+- editable
+- data-grid
+- excel
+- google-sheets
+- clipboard
+
 ## Docs
 - Package usage: `packages/xontable/README.md`
 - Changelog: `CHANGELOG.md`

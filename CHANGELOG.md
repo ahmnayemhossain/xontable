@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.2] - 2026-02-19
+- Status bar polish + docs updates
+
 ## [0.2.1] - 2026-02-19
 - Status bar for validation summary (optional)
 - Dark theme filter menu styling
