@@ -2,6 +2,9 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.2.3] - 2026-02-19
+- Add MIT license field and keywords in package README
+
 ## [0.2.2] - 2026-02-19
 - Status bar polish + docs updates
 
