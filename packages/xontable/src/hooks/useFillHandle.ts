@@ -9,10 +9,11 @@ type DragState = {
 
 type FillHandleOptions = {
   onApply: (startR: number, startC: number, endR: number, endC: number) => void;
+  getSourceBounds?: () => { r1: number; r2: number; c1: number; c2: number } | null;
 };
 
 export function useFillHandle(options: FillHandleOptions) {
-  const { onApply } = options;
+  const { onApply, getSourceBounds } = options;
   const [drag, setDrag] = useState<DragState | null>(null);
 
   const startDrag = useCallback((r: number, c: number) => {
@@ -51,20 +52,17 @@ export function useFillHandle(options: FillHandleOptions) {
   const isPreview = useCallback(
     (r: number, c: number) => {
       if (!drag) return false;
+      const b = getSourceBounds ? getSourceBounds() : null;
       const dr = Math.abs(drag.endR - drag.startR);
       const dc = Math.abs(drag.endC - drag.startC);
-      if (dc >= dr) {
-        if (r !== drag.startR) return false;
-        const from = Math.min(drag.startC, drag.endC);
-        const to = Math.max(drag.startC, drag.endC);
-        return c >= from && c <= to;
+      if (b) {
+        if (dc >= dr) { const from = Math.min(b.c1, drag.endC); const to = Math.max(b.c2, drag.endC); return r >= b.r1 && r <= b.r2 && c >= from && c <= to; }
+        const from = Math.min(b.r1, drag.endR); const to = Math.max(b.r2, drag.endR); return c >= b.c1 && c <= b.c2 && r >= from && r <= to;
       }
-      if (c !== drag.startC) return false;
-      const from = Math.min(drag.startR, drag.endR);
-      const to = Math.max(drag.startR, drag.endR);
-      return r >= from && r <= to;
+      if (dc >= dr) { if (r !== drag.startR) return false; const from = Math.min(drag.startC, drag.endC); const to = Math.max(drag.startC, drag.endC); return c >= from && c <= to; }
+      if (c !== drag.startC) return false; const from = Math.min(drag.startR, drag.endR); const to = Math.max(drag.startR, drag.endR); return r >= from && r <= to;
     },
-    [drag],
+    [drag, getSourceBounds],
   );
 
   return { drag, startDrag, isPreview };

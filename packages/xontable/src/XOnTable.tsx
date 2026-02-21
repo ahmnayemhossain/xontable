@@ -4,7 +4,6 @@ import type { XOnTableProps } from "./types";
 import { SelectMenu, XOnTableGrid, XOnTableStatusBar } from "./components";
 import { useAutoRows, useClipboardCatcher, useColumnFilters, useColumnGroups, useColumnResize, useEditorOverlay, useFillHandle, useGridKeydown, useOutsideClick, useRangeSelection, useSelectOptions, useTableModel } from "./hooks";
 type CellUpdate = { r: number; c: number; value: any }; const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
-
 export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<Row>) {
   const { columns, rows, rowIdKey = "id" as keyof Row, onChange, readOnly = false, theme = "light", showStatusBar = false, darkThemeColors } = props;
   const activeCellRef = React.useRef<HTMLDivElement | null>(null);
@@ -60,7 +59,7 @@ export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<R
     isEditing,
     getCopyBlock: () => { const b = selection.getBounds(); if (!b) return [[getValue(active.r, active.c)]]; const block: string[][] = []; for (let r = b.r1; r <= b.r2; r++) { const row: string[] = []; for (let c = b.c1; c <= b.c2; c++) row.push(getValue(r, c)); block.push(row); } return block; },
     onCopy: () => setCopiedBounds(selection.getBounds() ?? { r1: active.r, r2: active.r, c1: active.c, c2: active.c }),
-    onPasteBlock: (block) => { if (readOnly) return; const updates: CellUpdate[] = []; for (let rOff = 0; rOff < block.length; rOff++) for (let cOff = 0; cOff < block[rOff].length; cOff++) { const r = active.r + rOff; const c = active.c + cOff; if (c < colCount) updates.push({ r, c, value: block[rOff][cOff] }); } updateCells(updates, { type: "paste", cell: active }); updates.forEach((u) => validateSelect(u.r, u.c, u.value, data[u.r])); },
+    onPasteBlock: (block) => { if (readOnly) return; const updates: CellUpdate[] = []; const b = selection.getBounds(); const br = block.length || 1; const bc = block[0]?.length || 1; const tr = b ? b.r2 - b.r1 + 1 : br; const tc = b ? b.c2 - b.c1 + 1 : bc; const sr = b ? b.r1 : active.r; const sc = b ? b.c1 : active.c; for (let rOff = 0; rOff < tr; rOff++) for (let cOff = 0; cOff < tc; cOff++) { const r = sr + rOff; const c = sc + cOff; if (c < colCount) updates.push({ r, c, value: block[rOff % br]?.[cOff % bc] ?? "" }); } updateCells(updates, { type: "paste", cell: active }); updates.forEach((u) => validateSelect(u.r, u.c, u.value, data[u.r])); },
   });
   React.useEffect(() => { if (!isEditing) focusClipboard(); }, [focusClipboard, isEditing]);
   const openSelectAt = React.useCallback((r: number, c: number) => {
@@ -70,11 +69,12 @@ export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<R
     ensureSelect(r, c, row); requestAnimationFrame(() => startEdit());
   }, [data, ensureSelect, focusClipboard, readOnly, rowIdKey, selection, setActive, startEdit]);
   const { startDrag, isPreview } = useFillHandle({
+    getSourceBounds: () => selection.getBounds(),
     onApply: (startR, startC, endR, endC) => {
-      if (readOnly) return; const value = getValue(startR, startC); const updates: CellUpdate[] = [];
-      const dr = Math.abs(endR - startR); const dc = Math.abs(endC - startC);
-      if (dc >= dr) { const from = Math.min(startC, endC); const to = Math.max(startC, endC); for (let c = from; c <= to; c++) updates.push({ r: startR, c, value }); }
-      else { const from = Math.min(startR, endR); const to = Math.max(startR, endR); for (let r = from; r <= to; r++) updates.push({ r, c: startC, value }); }
+      if (readOnly) return; const b = selection.getBounds(); const sr = b ? b.r1 : startR; const sc = b ? b.c1 : startC; const er = b ? b.r2 : startR; const ec = b ? b.c2 : startC;
+      const dr = Math.abs(endR - startR); const dc = Math.abs(endC - startC); const tr1 = dc >= dr ? sr : Math.min(sr, endR); const tr2 = dc >= dr ? er : Math.max(er, endR); const tc1 = dc >= dr ? Math.min(sc, endC) : sc; const tc2 = dc >= dr ? Math.max(ec, endC) : ec;
+      const rows = er - sr + 1; const cols = ec - sc + 1; const updates: CellUpdate[] = [];
+      for (let r = tr1; r <= tr2; r++) for (let c = tc1; c <= tc2; c++) { if (c >= colCount) continue; const vr = sr + ((r - sr) % rows); const vc = sc + ((c - sc) % cols); updates.push({ r, c, value: getValue(vr, vc) }); }
       updateCells(updates, { type: "fill", cell: { r: startR, c: startC } }); updates.forEach((u) => validateSelect(u.r, u.c, u.value, data[u.r])); focusClipboard();
     },
   });
