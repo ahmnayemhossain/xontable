@@ -9,10 +9,15 @@ type HeaderProps<Row extends Record<string, any>> = {
   groups?: GroupHeader[];
   rowNumberWidth: number;
   activeCol: number;
+  selectionBounds: { r1: number; r2: number; c1: number; c2: number } | null;
+  fillBounds?: { r1: number; r2: number; c1: number; c2: number } | null;
   getColWidth: (c: number) => number;
   onResizeStart: (c: number, ev: React.MouseEvent) => void;
   onResizeDoubleClick: (c: number, ev: React.MouseEvent) => void;
   onGroupToggle: (key: string) => void;
+  onGroupSelect: (key: string, ev: React.MouseEvent) => void;
+  onColSelect: (c: number, ev: React.MouseEvent) => void;
+  onColEnter: (c: number, ev: React.MouseEvent) => void;
   filterOpenKey: string | null;
   filterSearch: string;
   getFilterOptions: (key: string) => string[];
@@ -25,7 +30,7 @@ type HeaderProps<Row extends Record<string, any>> = {
 };
 
 export function XOnTableHeader<Row extends Record<string, any>>(props: HeaderProps<Row>) {
-  const { columns, groups, rowNumberWidth, activeCol, getColWidth, onResizeStart, onResizeDoubleClick, onGroupToggle, filterOpenKey, filterSearch, getFilterOptions, isFilterChecked, isFilterAllChecked, onFilterOpen, onFilterSearch, onFilterToggle, onFilterToggleAll } = props;
+  const { columns, groups, rowNumberWidth, activeCol, selectionBounds, fillBounds, getColWidth, onResizeStart, onResizeDoubleClick, onGroupToggle, onGroupSelect, onColSelect, onColEnter, filterOpenKey, filterSearch, getFilterOptions, isFilterChecked, isFilterAllChecked, onFilterOpen, onFilterSearch, onFilterToggle, onFilterToggleAll } = props;
   const FilterIcon = () => (
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path d="M3 5h18M6 11h12M10 17h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
@@ -48,7 +53,7 @@ export function XOnTableHeader<Row extends Record<string, any>>(props: HeaderPro
         <div className="xontable-row xontable-group-row">
           <div className="xontable-cell xontable-rownum-cell xontable-group-cell" style={{ width: rowNumberWidth }} />
           {groups.map((g) => (
-            <div key={g.key} className="xontable-cell xontable-group-cell" style={{ width: g.width }}>
+            <div key={g.key} className="xontable-cell xontable-group-cell" style={{ width: g.width }} onMouseDown={(ev) => onGroupSelect(g.key, ev)}>
               <span className="xontable-group-label">{g.label}</span>
               {g.collapsible && (
                 <button type="button" className="xontable-group-toggle" onClick={() => onGroupToggle(g.key)} title={g.collapsed ? "Expand" : "Collapse"}>
@@ -62,8 +67,11 @@ export function XOnTableHeader<Row extends Record<string, any>>(props: HeaderPro
 
       <div className="xontable-row xontable-head">
         <div className="xontable-cell xontable-rownum-cell xontable-head-cell" style={{ width: rowNumberWidth }} />
-        {columns.map(({ col, idx }, c) => (
-          <div key={col.key + String(idx ?? c)} className={["xontable-cell", "xontable-head-cell", c === activeCol ? "is-active-col-head" : ""].join(" ")} style={{ width: getColWidth(c) }}>
+        {columns.map(({ col, idx }, c) => {
+          const inSel = selectionBounds && c >= selectionBounds.c1 && c <= selectionBounds.c2;
+          const inFill = fillBounds && c >= fillBounds.c1 && c <= fillBounds.c2;
+          return (
+          <div key={col.key + String(idx ?? c)} className={["xontable-cell", "xontable-head-cell", c === activeCol ? "is-active-col-head" : "", (inSel || inFill) ? "is-range-col-head" : ""].join(" ")} style={{ width: getColWidth(c) }} onMouseDown={(ev) => onColSelect(c, ev)} onMouseEnter={(ev) => onColEnter(c, ev)}>
             <span className="xontable-head-label">{col.label}</span>
             {idx != null && (
               <>
@@ -84,7 +92,7 @@ export function XOnTableHeader<Row extends Record<string, any>>(props: HeaderPro
               </>
             )}
           </div>
-        ))}
+        )})}
       </div>
     </>
   );

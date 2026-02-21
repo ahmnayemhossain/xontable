@@ -16,8 +16,6 @@
 .xontable-wrap.theme-dark .xontable-cell.is-copied { outline: 1px dotted #7ad27a; outline-offset: -1px; }
 .xontable-wrap.theme-dark .xontable-editor { background: var(--xontable-dark-editor-bg, #1e1f22); color: var(--xontable-dark-editor-text, #e6e6e6); border-color: var(--xontable-dark-accent, #8ab4f8); }
 
-.xontable-wrap.theme-dark .xontable-row.is-zebra .xontable-cell { background: var(--xontable-dark-cell-bg, #1e1f22); }
-.xontable-wrap.theme-dark .xontable-row.is-zebra .xontable-rownum-cell { background: var(--xontable-dark-head-bg, #2b2d31); }
 
 .xontable-wrap.theme-dark .xontable-head-cell,
 .xontable-wrap.theme-dark .xontable-rownum-cell,
@@ -26,6 +24,10 @@
   color: var(--xontable-dark-text, #e6e6e6);
 }
 
+.xontable-wrap.theme-dark .xontable-head-cell.is-range-col-head,
+.xontable-wrap.theme-dark .xontable-rownum-cell.is-range-rownum {
+  background: #2f3f5c;
+}
 .xontable-wrap.theme-dark .xontable-head-cell.is-active-col-head,
 .xontable-wrap.theme-dark .xontable-rownum-cell.is-active-rownum {
   background: var(--xontable-dark-active-head-bg, #344769) !important;

@@ -1,9 +1,6 @@
-import React from "react";
-import "./styles/xontable.css";
-import type { XOnTableProps } from "./types";
-import { SelectMenu, XOnTableGrid, XOnTableStatusBar } from "./components";
-import { useAutoRows, useClipboardCatcher, useColumnFilters, useColumnGroups, useColumnResize, useEditorOverlay, useFillHandle, useGridKeydown, useOutsideClick, useRangeSelection, useSelectOptions, useTableModel } from "./hooks";
-type CellUpdate = { r: number; c: number; value: any }; const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
+import React from "react"; import "./styles/xontable.css";
+import type { XOnTableProps } from "./types"; import { SelectMenu, XOnTableGrid, XOnTableStatusBar } from "./components";
+import { useAutoRows, useClipboardCatcher, useColumnFilters, useColumnGroups, useColumnResize, useEditorOverlay, useFillHandle, useGridKeydown, useOutsideClick, useRangeSelection, useSelectOptions, useTableModel } from "./hooks"; type CellUpdate = { r: number; c: number; value: any }; const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
 export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<Row>) {
   const { columns, rows, rowIdKey = "id" as keyof Row, onChange, readOnly = false, theme = "light", showStatusBar = false, darkThemeColors } = props;
   const activeCellRef = React.useRef<HTMLDivElement | null>(null);
@@ -11,17 +8,12 @@ export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<R
   const { normalizedRows, handleChange, createRow } = useAutoRows(columns, rows, rowIdKey, onChange, editingRowId);
   const filters = useColumnFilters(columns, normalizedRows);
   const { visibleColumns, groupHeaders, getColWidth, setColWidth, toggleGroup, resetWidths, getOrigIndex } = useColumnGroups<Row>({ columns });
+  const groupRanges = React.useMemo(() => { const ranges: Record<string, { c1: number; c2: number }> = {}; visibleColumns.forEach((v, c) => { const key = v.idx == null ? (v.col.key.startsWith("__group_") ? v.col.key.slice(8) : `__col_${c}`) : (columns[v.idx]?.group ?? `__col_${v.idx}`); if (!ranges[key]) ranges[key] = { c1: c, c2: c }; else ranges[key].c2 = c; }); return ranges; }, [columns, visibleColumns]);
   const { getOptions, ensureOptions, isLoading } = useSelectOptions(columns);
-  const selection = useRangeSelection();
+  const selection = useRangeSelection(); const selectionBounds = selection.getBounds(); const [headerDrag, setHeaderDrag] = React.useState<{ type: "row" | "col"; index: number } | null>(null);
   const [copiedBounds, setCopiedBounds] = React.useState<{ r1: number; r2: number; c1: number; c2: number } | null>(null);
   React.useEffect(() => { resetWidths(); }, [columns, resetWidths]);
-  const { data, active, setActive, getValue, updateCells, moveActive, rowCount, colCount, hasError, getError, setCellErrorView, errorList, undo, redo } = useTableModel<Row>({
-    columns: visibleColumns.map((v) => v.col),
-    rows: normalizedRows,
-    rowFilter: filters.rowFilter,
-    onChange: handleChange,
-    createRow,
-  });
+  const { data, active, setActive, getValue, updateCells, moveActive, rowCount, colCount, hasError, getError, setCellErrorView, errorList, undo, redo } = useTableModel<Row>({ columns: visibleColumns.map((v) => v.col), rows: normalizedRows, rowFilter: filters.rowFilter, onChange: handleChange, createRow });
   React.useEffect(() => { if (active.c >= colCount) setActive({ r: active.r, c: Math.max(0, colCount - 1) }); }, [active, colCount, setActive]);
   const activeCol = visibleColumns[active.c]?.col; const activeRow = data[active.r];
   const validateSelect = React.useCallback((r: number, c: number, value: string, row: Row | undefined) => {
@@ -36,15 +28,7 @@ export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<R
   const measureRef = React.useRef<HTMLDivElement | null>(null); React.useEffect(() => () => { if (measureRef.current) measureRef.current.remove(); }, []);
   const measureText = React.useCallback((text: string) => { let el = measureRef.current; if (!el) { el = document.createElement("div"); el.className = "xontable-cell xontable-measure"; document.body.appendChild(el); measureRef.current = el; } el.textContent = text || ""; return Math.ceil(el.getBoundingClientRect().width); }, []);
   const autoFitCol = React.useCallback((visibleIndex: number) => { const orig = getOrigIndex(visibleIndex); if (orig == null) return; let max = measureText(columns[orig]?.label ?? ""); for (let r = 0; r < data.length; r++) { const w = measureText(getValue(r, visibleIndex)); if (w > max) max = w; } setColWidth(visibleIndex, Math.min(600, Math.max(60, max + 15))); }, [columns, data.length, getOrigIndex, getValue, measureText, setColWidth]);
-  const { isEditing, draft, setDraft, editorRect, editorRef, startEdit, commitEdit, onEditorKeyDown } = useEditorOverlay({
-    active, activeCellRef, getValue,
-    onCommit: (value) => {
-      const row = data[active.r]; const col = visibleColumns[active.c]?.col;
-      const v = col?.type === "select" ? normalizeSelectValue(active.r, active.c, value, row) : value;
-      updateCells([{ r: active.r, c: active.c, value: v }], { type: "edit", cell: active });
-    },
-    onEnter: (dir) => moveActive(dir, 0), onTab: (dir) => moveActive(0, dir),
-  });
+  const { isEditing, draft, setDraft, editorRect, editorRef, startEdit, commitEdit, onEditorKeyDown } = useEditorOverlay({ active, activeCellRef, getValue, onCommit: (value) => { const row = data[active.r]; const col = visibleColumns[active.c]?.col; const v = col?.type === "select" ? normalizeSelectValue(active.r, active.c, value, row) : value; updateCells([{ r: active.r, c: active.c, value: v }], { type: "edit", cell: active }); }, onEnter: (dir) => moveActive(dir, 0), onTab: (dir) => moveActive(0, dir) });
   React.useEffect(() => { if (!isEditing) setEditingRowId(null); }, [isEditing]);
   const startEditCell = React.useCallback((initial?: string) => { if (readOnly) return; const id = activeRow ? String((activeRow as any)[rowIdKey] ?? "") : ""; setEditingRowId(id || null); ensureSelect(active.r, active.c, activeRow); startEdit(initial); }, [active.c, active.r, activeRow, ensureSelect, readOnly, rowIdKey, startEdit]);
   const toggleCheckbox = React.useCallback((r: number, c: number) => {
@@ -55,20 +39,20 @@ export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<R
     updateCells([{ r, c, value: !checked }], { type: "edit", cell: { r, c } });
   }, [data, readOnly, updateCells, visibleColumns]);
   const clearRange = React.useCallback(() => { const b = selection.getBounds(); if (!b) { updateCells([{ r: active.r, c: active.c, value: "" }], { type: "edit", cell: active }); return; } const updates: CellUpdate[] = []; for (let r = b.r1; r <= b.r2; r++) for (let c = b.c1; c <= b.c2; c++) updates.push({ r, c, value: "" }); updateCells(updates, { type: "edit", cell: active }); }, [active, selection, updateCells]);
-  const { clipRef, focusClipboard, onCopy, onPaste } = useClipboardCatcher({
+  const pasteArmed = React.useRef(false); const { clipRef, focusClipboard, onCopy, onPaste, onInput } = useClipboardCatcher({
     isEditing,
     getCopyBlock: () => { const b = selection.getBounds(); if (!b) return [[getValue(active.r, active.c)]]; const block: string[][] = []; for (let r = b.r1; r <= b.r2; r++) { const row: string[] = []; for (let c = b.c1; c <= b.c2; c++) row.push(getValue(r, c)); block.push(row); } return block; },
     onCopy: () => setCopiedBounds(selection.getBounds() ?? { r1: active.r, r2: active.r, c1: active.c, c2: active.c }),
-    onPasteBlock: (block) => { if (readOnly) return; const updates: CellUpdate[] = []; const b = selection.getBounds(); const br = block.length || 1; const bc = block[0]?.length || 1; const tr = b ? b.r2 - b.r1 + 1 : br; const tc = b ? b.c2 - b.c1 + 1 : bc; const sr = b ? b.r1 : active.r; const sc = b ? b.c1 : active.c; for (let rOff = 0; rOff < tr; rOff++) for (let cOff = 0; cOff < tc; cOff++) { const r = sr + rOff; const c = sc + cOff; if (c < colCount) updates.push({ r, c, value: block[rOff % br]?.[cOff % bc] ?? "" }); } updateCells(updates, { type: "paste", cell: active }); updates.forEach((u) => validateSelect(u.r, u.c, u.value, data[u.r])); },
+    onPasteBlock: (block) => { if (readOnly) return; const updates: CellUpdate[] = []; const b = selection.getBounds(); const useSel = b && (b.r2 > b.r1 || b.c2 > b.c1); const br = block.length || 1; const bc = block[0]?.length || 1; const tr = useSel ? b.r2 - b.r1 + 1 : br; const tc = useSel ? b.c2 - b.c1 + 1 : bc; const sr = useSel ? b.r1 : active.r; const sc = useSel ? b.c1 : active.c; for (let rOff = 0; rOff < tr; rOff++) for (let cOff = 0; cOff < tc; cOff++) { const r = sr + rOff; const c = sc + cOff; if (c < colCount) updates.push({ r, c, value: block[rOff % br]?.[cOff % bc] ?? "" }); } updateCells(updates, { type: "paste", cell: active }); updates.forEach((u) => validateSelect(u.r, u.c, u.value, data[u.r])); },
+    isPasteArmed: () => pasteArmed.current,
   });
-  React.useEffect(() => { if (!isEditing) focusClipboard(); }, [focusClipboard, isEditing]);
-  const openSelectAt = React.useCallback((r: number, c: number) => {
+  React.useEffect(() => { if (!isEditing) focusClipboard(); }, [focusClipboard, isEditing]); const openSelectAt = React.useCallback((r: number, c: number) => {
     if (readOnly) return;
     setActive({ r, c }); selection.startSelection({ r, c }); focusClipboard();
     const row = data[r]; const id = row ? String((row as any)[rowIdKey] ?? "") : ""; setEditingRowId(id || null);
     ensureSelect(r, c, row); requestAnimationFrame(() => startEdit());
   }, [data, ensureSelect, focusClipboard, readOnly, rowIdKey, selection, setActive, startEdit]);
-  const { startDrag, isPreview } = useFillHandle({
+  const { drag, startDrag, isPreview } = useFillHandle({
     getSourceBounds: () => selection.getBounds(),
     onApply: (startR, startC, endR, endC) => {
       if (readOnly) return; const b = selection.getBounds(); const sr = b ? b.r1 : startR; const sc = b ? b.c1 : startC; const er = b ? b.r2 : startR; const ec = b ? b.c2 : startC;
@@ -77,9 +61,15 @@ export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<R
       for (let r = tr1; r <= tr2; r++) for (let c = tc1; c <= tc2; c++) { if (c >= colCount) continue; const vr = sr + ((r - sr) % rows); const vc = sc + ((c - sc) % cols); updates.push({ r, c, value: getValue(vr, vc) }); }
       updateCells(updates, { type: "fill", cell: { r: startR, c: startC } }); updates.forEach((u) => validateSelect(u.r, u.c, u.value, data[u.r])); focusClipboard();
     },
-  });
-  const onShiftMove = React.useCallback((dr: number, dc: number) => { const next = { r: clamp(active.r + dr, 0, rowCount - 1), c: clamp(active.c + dc, 0, colCount - 1) }; if (!selection.selection) selection.startSelection(active); selection.updateSelection(next); setActive(next); }, [active, colCount, rowCount, selection, setActive]);
-  const onGridKeyDown = useGridKeydown({
+  }); const fillBounds = React.useMemo(() => {
+    if (!drag) return null; const b = selectionBounds; const sr = b ? b.r1 : drag.startR; const sc = b ? b.c1 : drag.startC; const er = b ? b.r2 : drag.startR; const ec = b ? b.c2 : drag.startC;
+    const dr = Math.abs(drag.endR - drag.startR); const dc = Math.abs(drag.endC - drag.startC);
+    if (dc >= dr) return { r1: sr, r2: er, c1: Math.min(sc, drag.endC), c2: Math.max(ec, drag.endC) };
+    return { r1: Math.min(sr, drag.endR), r2: Math.max(er, drag.endR), c1: sc, c2: ec };
+  }, [drag, selectionBounds]);
+  const selectRange = React.useCallback((r1: number, c1: number, r2: number, c2: number, next: { r: number; c: number }) => { selection.startSelection({ r: r1, c: c1 }); selection.updateSelection({ r: r2, c: c2 }); selection.stopSelection(); setActive(next); setCopiedBounds(null); focusClipboard(); }, [focusClipboard, selection, setActive]);
+  React.useEffect(() => { if (!headerDrag) return; const onUp = () => { setHeaderDrag(null); selection.stopSelection(); }; window.addEventListener("mouseup", onUp); return () => window.removeEventListener("mouseup", onUp); }, [headerDrag, selection]);
+  const onShiftMove = React.useCallback((dr: number, dc: number) => { const next = { r: clamp(active.r + dr, 0, rowCount - 1), c: clamp(active.c + dc, 0, colCount - 1) }; if (!selection.selection) selection.startSelection(active); selection.updateSelection(next); setActive(next); }, [active, colCount, rowCount, selection, setActive]); const onGridKeyDown = useGridKeydown({
     active, rowCount, colCount, isEditing, moveActive, moveTo: (r, c) => setActive({ r, c }),
     startEdit: readOnly ? () => {} : startEditCell,
     clearCell: () => { if (!readOnly) clearRange(); },
@@ -91,6 +81,8 @@ export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<R
     const isClip = Boolean(target && target.classList.contains("xontable-clip"));
     if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA") && !isClip) return;
     const isCopy = (e.ctrlKey || e.metaKey) && (e.key === "c" || e.key === "C");
+    const isPaste = (e.ctrlKey || e.metaKey) && (e.key === "v" || e.key === "V");
+    if (isPaste) { pasteArmed.current = true; focusClipboard(); return; }
     if (isCopy) setCopiedBounds(selection.getBounds() ?? { r1: active.r, r2: active.r, c1: active.c, c2: active.c });
     else setCopiedBounds(null);
     onGridKeyDown(e);
@@ -107,34 +99,42 @@ export function XOnTable<Row extends Record<string, any>>(props: XOnTableProps<R
     "--xontable-dark-readonly-head-bg": darkThemeColors.readonlyHeadBg, "--xontable-dark-readonly-rownum-bg": darkThemeColors.readonlyRownumBg,
     "--xontable-dark-readonly-zebra-bg": darkThemeColors.readonlyZebraBg,
   } as React.CSSProperties) : undefined;
-  const onSelectError = React.useCallback((r: number, c: number) => { setActive({ r, c }); selection.startSelection({ r, c }); focusClipboard(); }, [focusClipboard, selection, setActive]);
-  return (
+  const onSelectError = React.useCallback((r: number, c: number) => { setActive({ r, c }); selection.startSelection({ r, c }); focusClipboard(); }, [focusClipboard, selection, setActive]); return (
     <div className={`xontable-wrap theme-${theme}${readOnly ? " is-readonly" : ""}`} style={darkVars}>
-      <textarea ref={clipRef} className="xontable-clip" name="xontable-clip" aria-hidden="true" tabIndex={-1} onCopy={onCopy} onPaste={onPaste} onKeyDown={onGridKeyDownWithCopy} readOnly />
+      <textarea ref={clipRef} className="xontable-clip" name="xontable-clip" aria-hidden="true" tabIndex={-1} onCopy={onCopy} onPaste={onPaste} onInput={onInput} onKeyDown={onGridKeyDownWithCopy} />
       <div
         className={`xontable-surface${filters.filterOpenKey ? " is-filter-open" : ""}`}
         tabIndex={0}
+        onPaste={onPaste}
         onFocus={(e) => {
+          pasteArmed.current = true;
           const target = e.target as HTMLElement | null;
           if (target && (target.tagName === "INPUT" || target.tagName === "TEXTAREA")) return;
           focusClipboard();
         }}
+        onBlur={() => { pasteArmed.current = false; }}
         onKeyDown={onGridKeyDownWithCopy}
       >
         <XOnTableGrid
           columns={visibleColumns} groups={groupHeaders.some((g) => g.label) ? groupHeaders : undefined} rowNumberWidth={44}
           data={data} rowIdKey={rowIdKey} active={active} activeCol={active.c} isEditing={isEditing} readOnly={readOnly}
-          selectionBounds={selection.getBounds()} copiedBounds={copiedBounds}
+          selectionBounds={selectionBounds} fillBounds={fillBounds} copiedBounds={copiedBounds}
           getColWidth={getColWidth} getValue={getValue} hasError={hasError} getError={getError} isPreview={isPreview} activeCellRef={activeCellRef}
-          onCellMouseDown={(r, c, ev) => { ev.preventDefault(); setActive({ r, c }); selection.startSelection({ r, c }); setCopiedBounds(null); focusClipboard(); if (filters.filterOpenKey) filters.closeFilter(); }}
+          onCellMouseDown={(r, c, ev) => { ev.preventDefault(); pasteArmed.current = true; setActive({ r, c }); selection.startSelection({ r, c }); setCopiedBounds(null); focusClipboard(); if (filters.filterOpenKey) filters.closeFilter(); }}
           onCellMouseEnter={(r, c) => { if (selection.isSelecting) selection.updateSelection({ r, c }); }}
           onCellDoubleClick={(r, c) => { setActive({ r, c }); startEditCell(); }}
           onCheckboxToggle={toggleCheckbox}
           onSelectOpen={openSelectAt}
           onFillStart={(r, c, ev) => { ev.preventDefault(); ev.stopPropagation(); startDrag(r, c); }}
+          onRowHeaderSelect={(r, ev) => { ev.preventDefault(); ev.stopPropagation(); pasteArmed.current = true; if (filters.filterOpenKey) filters.closeFilter(); setHeaderDrag({ type: "row", index: r }); selectRange(r, 0, r, Math.max(0, colCount - 1), { r, c: active.c }); }}
+          onRowHeaderEnter={(r, ev) => { if (!headerDrag || headerDrag.type !== "row") return; ev.preventDefault(); ev.stopPropagation(); const r1 = Math.min(headerDrag.index, r); const r2 = Math.max(headerDrag.index, r); selectRange(r1, 0, r2, Math.max(0, colCount - 1), { r, c: active.c }); }}
           onResizeStart={(c, ev) => { ev.preventDefault(); ev.stopPropagation(); startResize(c, ev.clientX); }}
           onResizeDoubleClick={(c, ev) => { ev.preventDefault(); ev.stopPropagation(); autoFitCol(c); }}
-          onGroupToggle={toggleGroup} filterOpenKey={filters.filterOpenKey} filterSearch={filters.filterSearch}
+          onGroupToggle={toggleGroup}
+          onGroupSelect={(key, ev) => { if ((ev.target as HTMLElement | null)?.closest(".xontable-group-toggle")) return; ev.preventDefault(); ev.stopPropagation(); const g = groupRanges[key]; if (!g) return; pasteArmed.current = true; if (filters.filterOpenKey) filters.closeFilter(); selectRange(0, g.c1, Math.max(0, rowCount - 1), g.c2, { r: active.r, c: g.c1 }); }}
+          onColSelect={(c, ev) => { if ((ev.target as HTMLElement | null)?.closest(".xontable-filter-btn,.xontable-col-resizer,.xontable-filter-menu")) return; ev.preventDefault(); ev.stopPropagation(); pasteArmed.current = true; if (filters.filterOpenKey) filters.closeFilter(); setHeaderDrag({ type: "col", index: c }); selectRange(0, c, Math.max(0, rowCount - 1), c, { r: active.r, c }); }}
+          onColEnter={(c, ev) => { if (!headerDrag || headerDrag.type !== "col") return; if ((ev.target as HTMLElement | null)?.closest(".xontable-filter-btn,.xontable-col-resizer,.xontable-filter-menu")) return; ev.preventDefault(); ev.stopPropagation(); const c1 = Math.min(headerDrag.index, c); const c2 = Math.max(headerDrag.index, c); selectRange(0, c1, Math.max(0, rowCount - 1), c2, { r: active.r, c: c }); }}
+          filterOpenKey={filters.filterOpenKey} filterSearch={filters.filterSearch}
           getFilterOptions={filters.getFilterOptions} isFilterChecked={filters.isFilterChecked} isFilterAllChecked={filters.isAllChecked}
           onFilterOpen={filters.openFilter} onFilterSearch={filters.setFilterSearch}
           onFilterToggle={filters.toggleFilterValue} onFilterToggleAll={filters.toggleAll}

@@ -29,6 +29,11 @@
 .xontable-cell.is-range-right { --rs-right: 1px; }
 .xontable-cell.is-range-bottom { --rs-bottom: 1px; }
 .xontable-cell.is-range-left { --rs-left: 1px; }
+.xontable-cell.is-fill-range { --fs-top: 0px; --fs-right: 0px; --fs-bottom: 0px; --fs-left: 0px; box-shadow: inset 0 var(--fs-top) 0 0 var(--xontable-range), inset calc(var(--fs-right) * -1) 0 0 0 var(--xontable-range), inset 0 calc(var(--fs-bottom) * -1) 0 0 0 var(--xontable-range), inset var(--fs-left) 0 0 0 var(--xontable-range); }
+.xontable-cell.is-fill-top { --fs-top: 1px; }
+.xontable-cell.is-fill-right { --fs-right: 1px; }
+.xontable-cell.is-fill-bottom { --fs-bottom: 1px; }
+.xontable-cell.is-fill-left { --fs-left: 1px; }
 .xontable-cell.is-copied-range { --ct: 0px; --cr: 0px; --cb: 0px; --cl: 0px; background-image: repeating-linear-gradient(90deg, var(--xontable-copy) 0 4px, transparent 4px 6px), repeating-linear-gradient(180deg, var(--xontable-copy) 0 4px, transparent 4px 6px), repeating-linear-gradient(90deg, var(--xontable-copy) 0 4px, transparent 4px 6px), repeating-linear-gradient(180deg, var(--xontable-copy) 0 4px, transparent 4px 6px); background-size: var(--ct) 2px, 2px var(--cr), var(--cb) 2px, 2px var(--cl); background-position: left top, right top, left bottom, left top; background-repeat: repeat-x, repeat-y, repeat-x, repeat-y; animation: xontable-march 0.8s linear infinite; opacity: 1; }
 .xontable-cell.is-copied-top { --ct: 100%; }
 .xontable-cell.is-copied-right { --cr: 100%; }
@@ -43,6 +48,8 @@
   0% { background-position: 0 0, 100% 0, 0 100%, 0 0; }
   100% { background-position: 6px 0, 100% 6px, 6px 100%, 0 6px; }
 }
+.xontable-head-cell.is-range-col-head,
+.xontable-rownum-cell.is-range-rownum { background: #dbe8ff; }
 .xontable-head-cell.is-active-col-head,
 .xontable-rownum-cell.is-active-rownum { background: #cfe3ff; }
 .xontable-cell.is-invalid { background: #fff1f1; border: 1px solid #f3b1b1; box-shadow: inset 0 0 0 0 #f3b1b1; }
