@@ -30,6 +30,9 @@ export function useValidation<Row extends Record<string, any>>(
 
       if (col.type === "checkbox") {
         const v = typeof nextValue === "boolean" ? String(nextValue) : value.trim().toLowerCase();
+        if (v === "") return null;
+        if (v === "1") return null;
+        if (v === "0") return null;
         if (v !== "true" && v !== "false") return "Must be true or false";
       }
 
@@ -51,6 +54,7 @@ export function useValidation<Row extends Record<string, any>>(
     },
     [],
   );
+  const clearErrors = useCallback(() => setErrors({}), []);
 
   const hasError = useCallback(
     (r: number, c: number) => {
@@ -65,8 +69,8 @@ export function useValidation<Row extends Record<string, any>>(
   );
 
   const api = useMemo(
-    () => ({ errors, validateCell, setCellError, hasError, getError }),
-    [errors, validateCell, setCellError, hasError, getError],
+    () => ({ errors, validateCell, setCellError, hasError, getError, clearErrors }),
+    [errors, validateCell, setCellError, hasError, getError, clearErrors],
   );
 
   return api;

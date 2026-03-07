@@ -8,6 +8,7 @@ export { useFillHandle } from "./useFillHandle";
 export { useGridKeydown } from "./useGridKeydown";
 export { useOutsideClick } from "./useOutsideClick";
 export { useRangeSelection } from "./useRangeSelection";
+export { useRowVirtualization } from "./useRowVirtualization";
 export { useSelectOptions } from "./useSelectOptions";
 export { useTableModel } from "./useTableModel";
 export { useValidation } from "./useValidation";

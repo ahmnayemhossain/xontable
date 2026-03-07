@@ -72,6 +72,58 @@ export function useTableModel<Row extends Record<string, any>>(options: TableMod
     if (changed) commitRows(next, meta, true, prev);
   }, [columns, commitRows, createRow, setCellError, validateCell, view.map]);
 
+  const updateCellsBatched = useCallback((updates: CellUpdate[], meta: XOnTableMeta, chunkSize = 500, validate = true, onDone?: () => void) => {
+    if (updates.length === 0) return;
+    const prev = dataRef.current; const next = prev.map((r) => ({ ...r })); let changed = false;
+    const map = [...view.map]; let i = 0;
+    const applyChunk = () => {
+      const end = Math.min(i + chunkSize, updates.length);
+      for (; i < end; i++) {
+        const u = updates[i]; const col = columns[u.c];
+        let real = map[u.r];
+        if (real == null && createRow) { real = next.length; next.push(createRow()); map[u.r] = real; }
+        const row = real == null ? undefined : next[real];
+        if (!col || !row || col.editable === false) continue;
+        const nextRow = { ...(row as Record<string, any>) };
+        nextRow[col.key as string] = u.value as any;
+        next[real] = nextRow as Row;
+        if (validate) { const err = validateCell(u.r, u.c, u.value, nextRow as Row); if (real != null) setCellError(real, u.c, err); }
+        changed = true; lastCellRef.current = { r: u.r, c: u.c };
+      }
+      if (i < updates.length) { setTimeout(applyChunk, 0); return; }
+      if (changed) commitRows(next, meta, true, prev);
+      onDone?.();
+    };
+    applyChunk();
+  }, [columns, commitRows, createRow, setCellError, validateCell, view.map]);
+
+  const validateRowsBatched = useCallback((rows: number[], chunkSize = 400, onProgress?: (done: number, total: number) => void, onDone?: () => void, rowsAreView = true) => {
+    if (rows.length === 0) return;
+    const map: number[] = [];
+    if (rowsAreView) dataRef.current.forEach((row, idx) => { if (!rowFilter || rowFilter(row, idx)) map.push(idx); });
+    const cells: Array<{ r: number; c: number }> = [];
+    rows.forEach((r) => { for (let c = 0; c < colCount; c++) cells.push({ r, c }); });
+    const total = cells.length; let i = 0;
+    const applyChunk = () => {
+      const end = Math.min(i + chunkSize, total);
+      for (; i < end; i++) {
+        const { r, c } = cells[i]; const real = rowsAreView ? map[r] : r;
+        if (real == null) continue;
+        const row = dataRef.current[real]; const col = columns[c];
+        if (!col || !row) continue;
+        const raw = (row as any)[col.key as string];
+        const err = rowsAreView
+          ? validateCell(r, c, raw == null ? "" : String(raw), row)
+          : validateCell(0, c, raw == null ? "" : String(raw), row);
+        setCellError(real, c, err);
+      }
+      onProgress?.(i, total);
+      if (i < total) { setTimeout(applyChunk, 0); return; }
+      onDone?.();
+    };
+    applyChunk();
+  }, [colCount, columns, rowFilter, setCellError, validateCell]);
+
   const moveActive = useCallback((dr: number, dc: number) => {
     setActive((prev) => {
       if (rowCount === 0 || colCount === 0) return prev;
@@ -112,10 +164,15 @@ export function useTableModel<Row extends Record<string, any>>(options: TableMod
   return {
     data: view.list,
     rawData: dataRef.current,
+    getRawData: () => dataRef.current,
+    viewMap: view.map,
+    getRow,
     active,
     setActive,
     getValue,
     updateCells,
+    updateCellsBatched,
+    validateRowsBatched,
     moveActive,
     rowCount,
     colCount,

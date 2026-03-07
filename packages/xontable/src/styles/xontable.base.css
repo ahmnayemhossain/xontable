@@ -1,11 +1,12 @@
 .xontable-wrap { display: block; width: 100%; height: 100%; border: 1px solid #e3e5ea; border-radius: 8px; overflow: hidden; background: #fff; --xontable-range: #1a73e8; --xontable-copy: #1a1a1a; }
-.xontable-surface { outline: none; width: 100%; height: 100%; min-height: 220px; overflow: auto; scrollbar-width: thin; scrollbar-color: #b9c1cd transparent; }
+.xontable-surface { outline: none; width: 100%; height: 100%; min-height: 220px; max-height: 70vh; overflow: auto; scrollbar-width: thin; scrollbar-color: #b9c1cd transparent; }
 .xontable-surface.is-filter-open { overflow-x: auto; overflow-y: visible; }
 .xontable-surface::-webkit-scrollbar { width: 8px; height: 8px; }
 .xontable-surface::-webkit-scrollbar-thumb { background: #b9c1cd; border-radius: 999px; }
 .xontable-surface::-webkit-scrollbar-track { background: transparent; }
 .xontable { border: 0; display: inline-block; min-width: 100%; font-family: "Segoe UI", Tahoma, sans-serif; font-size: 13px; user-select: none; background: transparent; }
 .xontable-row { display: flex; }
+.xontable-row-spacer { height: 0; width: 100%; }
 .xontable-cell { position: relative; height: 24px; border-right: 1px solid #e6e8ee; border-bottom: 1px solid #e6e8ee; display: flex; align-items: center; padding: 2px 6px 2px 8px; background: #fff; box-sizing: border-box; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 .xontable-cell.is-select { padding-right: 22px; }
 .xontable-select-trigger { position: absolute; right: 4px; top: 50%; width: 16px; height: 16px; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; padding: 0; cursor: pointer; transform: translateY(-50%); }
@@ -48,6 +49,7 @@
   0% { background-position: 0 0, 100% 0, 0 100%, 0 0; }
   100% { background-position: 6px 0, 100% 6px, 6px 100%, 0 6px; }
 }
+@keyframes xontable-spin { to { transform: rotate(360deg); } }
 .xontable-head-cell.is-range-col-head,
 .xontable-rownum-cell.is-range-rownum { background: #dbe8ff; }
 .xontable-head-cell.is-active-col-head,
@@ -74,6 +76,8 @@
 .xontable-status-item.is-chip-0 { background: #eef2ff; border-color: #c7d2fe; color: #3730a3; }
 .xontable-status-item.is-chip-1 { background: #ecfdf5; border-color: #a7f3d0; color: #065f46; }
 .xontable-status-item.is-chip-2 { background: #fff7ed; border-color: #fed7aa; color: #9a3412; }
+.xontable-status-item.is-loading { display: inline-flex; align-items: center; gap: 6px; border-color: #c7d2fe; background: #eef2ff; color: #3730a3; }
+.xontable-spinner { width: 12px; height: 12px; border-radius: 999px; border: 2px solid #c7d2fe; border-top-color: #4f46e5; animation: xontable-spin 0.8s linear infinite; }
 
 .xontable-wrap.is-readonly { background: #fff; border-color: #e4e7ec; }
 .xontable-wrap.is-readonly .xontable { color: #222; }

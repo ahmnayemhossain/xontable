@@ -43,6 +43,8 @@
 .xontable-wrap.theme-dark .xontable-status-item.is-chip-0 { background: #23304a; border-color: #3b4a6b; color: #c7d2fe; }
 .xontable-wrap.theme-dark .xontable-status-item.is-chip-1 { background: #1d2f28; border-color: #2f5f4a; color: #6ee7b7; }
 .xontable-wrap.theme-dark .xontable-status-item.is-chip-2 { background: #2b251d; border-color: #6b4a2f; color: #fdba74; }
+.xontable-wrap.theme-dark .xontable-status-item.is-loading { background: #23304a; border-color: #3b4a6b; color: #c7d2fe; }
+.xontable-wrap.theme-dark .xontable-spinner { border-color: #3b4a6b; border-top-color: #8ab4f8; }
 
 .xontable-wrap.theme-dark.is-readonly { border-color: var(--xontable-dark-readonly-border, #2c2f36); background: var(--xontable-dark-readonly-bg, #1b1c1f); }
 .xontable-wrap.theme-dark.is-readonly .xontable { color: var(--xontable-dark-text, #e6e6e6); }

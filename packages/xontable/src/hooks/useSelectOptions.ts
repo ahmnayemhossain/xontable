@@ -7,6 +7,7 @@ type SelectOptionsResult<Row extends Record<string, any>> = {
   getOptions: (row: Row, col: ColumnDef<Row>) => Option[];
   ensureOptions: (row: Row, col: ColumnDef<Row>) => void;
   isLoading: (row: Row, col: ColumnDef<Row>) => boolean;
+  preloadOptions: (rows: Row[], cols: ColumnDef<Row>[]) => Promise<void>;
 };
 
 export function useSelectOptions<Row extends Record<string, any>>(
@@ -39,7 +40,7 @@ export function useSelectOptions<Row extends Record<string, any>>(
     [keyFor],
   );
 
-  const ensureOptions = useCallback(
+  const loadOptions = useCallback(
     (row: Row, col: ColumnDef<Row>) => {
       if (col.options || !col.getOptions) return;
       const key = keyFor(row, col);
@@ -54,5 +55,24 @@ export function useSelectOptions<Row extends Record<string, any>>(
     [keyFor],
   );
 
-  return { getOptions, ensureOptions, isLoading };
+  const ensureOptions = loadOptions;
+
+  const preloadOptions = useCallback(async (rows: Row[], cols: ColumnDef<Row>[]) => {
+    const tasks: Promise<void>[] = [];
+    rows.forEach((row) => {
+      cols.forEach((col) => {
+        if (col.options || !col.getOptions) return;
+        const key = keyFor(row, col);
+        if (cacheRef.current[key]) return;
+        if (!loadingRef.current[key]) loadingRef.current[key] = true;
+        tasks.push(col.getOptions(row).then((opts) => {
+          cacheRef.current[key] = opts ?? [];
+          loadingRef.current[key] = false;
+        }));
+      });
+    });
+    if (tasks.length) { await Promise.allSettled(tasks); bump((v) => v + 1); }
+  }, [keyFor]);
+
+  return { getOptions, ensureOptions, isLoading, preloadOptions };
 }
